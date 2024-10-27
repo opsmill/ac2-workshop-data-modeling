@@ -3,6 +3,3 @@ database.db
 __pycache__/
 *.py[cod]
 *$py.class
-
-# Excluding the lock from the template repository
-poetry.lock
