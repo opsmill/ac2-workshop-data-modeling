@@ -28,10 +28,14 @@ class Country(Location):
 
 class Site(Location):
     address: str | None
-    country: Country
 
 
 class Device(BaseModel):
     name: str
     manufacturer: str | None = None
     status: DeviceStatus = DeviceStatus.ACTIVE
+
+
+class Tag(BaseModel):
+    name: str
+    color: str

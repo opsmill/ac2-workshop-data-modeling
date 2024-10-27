@@ -5,7 +5,7 @@ from sqlmodel.pool import StaticPool
 
 from workshop_b2.lab1.main import app
 from workshop_b2.lab1.database import get_session
-from workshop_b2.lab1.database.models import DeviceModel
+from workshop_b2.lab1.database.models import DeviceModel, SiteModel
 
 
 @pytest.fixture(name="session")
@@ -31,9 +31,20 @@ def client_fixture(session: Session):
 
 
 @pytest.fixture
-def device_data(session: Session):
-    dev1 = DeviceModel(name="device1", manufacturer="Arista")
-    dev2 = DeviceModel(name="device2", manufacturer="Nokia")
+def site_data(session: Session) -> list[SiteModel]:
+    site1 = SiteModel(name="atl1", label="Atlanta 1")
+    site2 = SiteModel(name="den1", label="Denver 1")
+    session.add(site1)
+    session.add(site2)
+    session.commit()
+
+    return [site1, site2]
+
+
+@pytest.fixture
+def device_data(session: Session, site_data: list[SiteModel]):
+    dev1 = DeviceModel(name="device1", manufacturer="Arista", site_id=site_data[0].id)
+    dev2 = DeviceModel(name="device2", manufacturer="Nokia", site_id=site_data[1].id)
     session.add(dev1)
     session.add(dev2)
     session.commit()
