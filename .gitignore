@@ -1,0 +1,8 @@
+database.db
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Excluding the lock from the template repository
+poetry.lock
