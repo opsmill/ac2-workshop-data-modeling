@@ -2,9 +2,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.responses import PlainTextResponse
 
-from .database import create_db_and_tables
-from .rest.router import router as rest_router
-from .graphql.router import init_app
+from workshop_b2.lab1.database import create_db_and_tables
+from workshop_b2.lab1.rest.router import router as rest_router
+from workshop_b2.lab1.graphql.router import init_app
 
 from graphql import print_schema
 
@@ -16,7 +16,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Autocon2 Workshopo B2 - Lab1",
+    title="Autocon2 Workshopo B2 - Lab2",
     docs_url="/docs",
     lifespan=lifespan,
 )
