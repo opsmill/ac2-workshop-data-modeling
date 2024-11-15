@@ -4,7 +4,9 @@ from pathlib import Path
 import httpx
 from invoke import Context, task
 
-from workshop_b2.models import Device
+from workshop_b2.lab1.database import models as Lab1Models
+from workshop_b2.lab2.database import models as Lab2Models
+
 
 MAIN_DIRECTORY_PATH = Path(__file__).parent
 
@@ -57,14 +59,14 @@ def lint_all(context: Context) -> None:
 ###
 ## Lab Commands
 ###
-def create_device(url: str) -> httpx.Response:
-    dev = Device(name=f"device-{str(uuid.uuid4())[-8:]}")
+def create_lab1_devices(url: str) -> httpx.Response:
+    dev = Lab1Models.Device(name=f"device-{str(uuid.uuid4())[-8:]}")
     with httpx.Client() as client:
         return client.post(f"{url}/api/devices/", json=dev.model_dump())
 
 
 @task
-def start_lab1(context: Context, reload: bool = True) -> None:
+def lab1_start(context: Context, reload: bool = True) -> None:
     """Start lab1."""
     exec_cmd = "fastapi run workshop_b2/lab1/main.py"
     if reload:
@@ -73,20 +75,31 @@ def start_lab1(context: Context, reload: bool = True) -> None:
 
 
 @task
-def load_lab1(context: Context, url: str = "http://localhost:8000"):
+def lab1_destroy(context: Context, reload: bool = False) -> None:
+    context.run("rm database.db")
+
+
+@task
+def lab1_load(context: Context, url: str = "http://localhost:8000"):
     for idx in range(0, 5):
-        response = create_device(url=url)
+        response = create_lab1_devices(url=url)
         response.raise_for_status()
 
 
 @task
-def test_lab1(context: Context) -> None:
+def lab1_test(context: Context) -> None:
     exec_cmd = "pytest tests/lab1"
     context.run(exec_cmd)
 
 
+def create_lab2_devices(url: str) -> httpx.Response:
+    dev = Lab2Models.Device(name=f"device-{str(uuid.uuid4())[-8:]}")
+    with httpx.Client() as client:
+        return client.post(f"{url}/api/devices/", json=dev.model_dump())
+
+
 @task
-def start_lab2(context: Context, reload: bool = True) -> None:
+def lab2_start(context: Context, reload: bool = True) -> None:
     exec_cmd = "fastapi run workshop_b2/lab2/main.py --port 8001"
     if reload:
         exec_cmd += " --reload"
@@ -95,18 +108,18 @@ def start_lab2(context: Context, reload: bool = True) -> None:
 
 
 @task
-def destroy_lab2(context: Context, reload: bool = False) -> None:
+def lab2_destroy(context: Context, reload: bool = False) -> None:
     context.run("docker compose down -v")
 
 
 @task
-def load_lab2(context: Context, url: str = "http://localhost:8001") -> None:
+def lab2_load(context: Context, url: str = "http://localhost:8001") -> None:
     for idx in range(0, 5):
-        response = create_device(url=url)
+        response = create_lab2_devices(url=url)
         response.raise_for_status()
 
 
 @task
-def test_lab2(context: Context) -> None:
+def lab2_test(context: Context) -> None:
     exec_cmd = "pytest tests/lab2"
     context.run(exec_cmd)

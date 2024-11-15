@@ -1,5 +1,5 @@
 from typing import Sequence
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from workshop_b2.lab1.database.models import (
@@ -19,7 +19,10 @@ router = APIRouter(prefix="/api")
 @router.post("/devices/")
 def create_device(item: DeviceModel, db: Session = Depends(get_session)) -> DeviceModel:
     db.add(item)
-    db.commit()
+    try:
+        db.commit()
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
     db.refresh(item)
     return item
 
