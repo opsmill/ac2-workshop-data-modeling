@@ -17,9 +17,9 @@ class DeviceStatus(str, Enum):
 
 
 class Location(BaseModel):
-    name: str = Field(description="Unique identifier of a location")
+    name: str
     label: str
-    description: str | None
+    description: str | None = None
 
 
 class Country(Location):
@@ -27,7 +27,7 @@ class Country(Location):
 
 
 class Site(Location):
-    address: str | None
+    address: str | None = None
 
 
 class Device(BaseModel):

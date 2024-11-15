@@ -1,6 +1,10 @@
+import uuid
 from pathlib import Path
 
+import httpx
 from invoke import Context, task
+
+from workshop_b2.models import Device
 
 MAIN_DIRECTORY_PATH = Path(__file__).parent
 
@@ -48,3 +52,49 @@ def lint_all(context: Context) -> None:
     lint_yaml(context)
     lint_ruff(context)
     lint_pyright(context)
+
+
+###
+## Lab Commands
+###
+def create_device(url: str) -> httpx.Response:
+    dev = Device(name=f"device-{str(uuid.uuid4())[-8:]}")
+    with httpx.Client() as client:
+        return client.post(f"{url}/api/devices/", json=dev.model_dump())
+
+
+@task
+def start_lab1(context: Context, reload: bool = True) -> None:
+    """Start lab1."""
+    exec_cmd = "fastapi run workshop_b2/lab1/main.py"
+    if reload:
+        exec_cmd += " --reload"
+    context.run(exec_cmd)
+
+
+@task
+def load_lab1(context: Context, url: str = "http://localhost:8000"):
+    for idx in range(0, 5):
+        response = create_device(url=url)
+        response.raise_for_status()
+
+
+@task
+def start_lab2(context: Context, reload: bool = True) -> None:
+    exec_cmd = "fastapi run workshop_b2/lab2/main.py --port 8001"
+    if reload:
+        exec_cmd += " --reload"
+    context.run("docker compose up -d")
+    context.run(exec_cmd)
+
+
+@task
+def destroy_lab2(context: Context, reload: bool = False) -> None:
+    context.run("docker compose down -v")
+
+
+@task
+def load_lab2(context: Context, url: str = "http://localhost:8001") -> None:
+    for idx in range(0, 5):
+        response = create_device(url=url)
+        response.raise_for_status()
