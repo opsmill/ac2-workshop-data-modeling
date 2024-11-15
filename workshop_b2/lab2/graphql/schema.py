@@ -19,10 +19,11 @@ class Query:
         ).records
         return [DeviceType(**d["d"], **{"site": SiteType(**d["s"])}) for d in devices]
 
-    # @strawberry.field()
-    # def tags(self, info: strawberry.Info) -> list[TagType]:
-    #     session = info.context["session"]
-    #     return session.exec(select(TagModel)).all()
+    @strawberry.field()
+    def tags(self, info: strawberry.Info) -> list[TagType]:
+        session = info.context["session"]
+        tags = session.execute_query("MATCH (t:Tag) RETURN t").records
+        return [TagType(**t["t"]) for t in tags]
 
     @strawberry.field()
     def sites(self, info: strawberry.Info) -> list[SiteType]:
@@ -30,10 +31,11 @@ class Query:
         sites = session.execute_query("MATCH (s:Site) RETURN s").records
         return [SiteType(**s["s"]) for s in sites]
 
-    # @strawberry.field()
-    # def countries(self, info: strawberry.Info) -> list[CountryType]:
-    #     session = info.context["session"]
-    #     return session.exec(select(CountryModel)).all()
+    @strawberry.field()
+    def countries(self, info: strawberry.Info) -> list[CountryType]:
+        session = info.context["session"]
+        countries = session.execute_query("MATCH (c:Country) RETURN c").records
+        return [CountryType(**c["c"]) for c in countries]
 
     # @strawberry.field()
     # def locations(self, info: strawberry.Info) -> list[LocationType]:

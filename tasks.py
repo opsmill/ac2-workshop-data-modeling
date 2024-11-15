@@ -80,6 +80,12 @@ def load_lab1(context: Context, url: str = "http://localhost:8000"):
 
 
 @task
+def test_lab1(context: Context) -> None:
+    exec_cmd = "pytest tests/lab1"
+    context.run(exec_cmd)
+
+
+@task
 def start_lab2(context: Context, reload: bool = True) -> None:
     exec_cmd = "fastapi run workshop_b2/lab2/main.py --port 8001"
     if reload:
@@ -98,3 +104,9 @@ def load_lab2(context: Context, url: str = "http://localhost:8001") -> None:
     for idx in range(0, 5):
         response = create_device(url=url)
         response.raise_for_status()
+
+
+@task
+def test_lab2(context: Context) -> None:
+    exec_cmd = "pytest tests/lab2"
+    context.run(exec_cmd)
