@@ -12,7 +12,7 @@ class SiteModel(Site):
 
 
 class DeviceModel(Device):
-    site: SiteModel | None = None
+    site: SiteModel
 
 
 class TagModel(Tag):
