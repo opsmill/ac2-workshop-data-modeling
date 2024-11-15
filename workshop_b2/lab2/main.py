@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.responses import PlainTextResponse
 from neo4j.exceptions import ServiceUnavailable
 
-from workshop_b2.lab2.database import get_db
+from workshop_b2.lab2.database import create_initial_constraints, get_db
 from workshop_b2.lab2.rest.router import router as rest_router
 from workshop_b2.lab2.graphql.router import init_app
 
@@ -28,7 +28,7 @@ async def lifespan(app: FastAPI):
                 print("Max retries reached, shutting down.")
                 db.close()
                 raise
-    # TODO: Add constraint function after the database is connected
+    create_initial_constraints()
     yield
     db.close()
 

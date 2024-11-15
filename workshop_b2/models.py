@@ -27,7 +27,7 @@ class Country(Location):
 
 
 class Site(Location):
-    address: str | None = None
+    address: str
 
 
 class Device(BaseModel):

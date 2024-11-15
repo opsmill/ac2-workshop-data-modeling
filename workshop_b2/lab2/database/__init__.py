@@ -22,70 +22,26 @@ def get_session() -> Session:
         yield session
 
 
-def create_initial_nodes() -> None:
+def create_initial_constraints() -> None:
     db = get_db()
     with db.session(database="neo4j") as session:
         session.run(
             """
-            CREATE (c:Country {name: "United States"})
-            CREATE (s:Site {name: "Site 1"})
-            CREATE (d:Device {name: "Device 1"})
-            CREATE (t:Tag {name: "Tag 1"})
+            CREATE CONSTRAINT site_name IF NOT EXISTS FOR (s:Site) REQUIRE s.name IS UNIQUE;
             """
         )
         session.run(
             """
-            MATCH (s:Site {name: "Site 1"})
-            MATCH (c:Country {name: "United States"})
-            CREATE (s)-[:LOCATED_IN]->(c)
+            CREATE CONSTRAINT device_name IF NOT EXISTS FOR (d:Device) REQUIRE d.name IS UNIQUE;
             """
         )
         session.run(
             """
-            MATCH (d:Device {name: "Device 1"})
-            MATCH (s:Site {name: "Site 1"})
-            CREATE (d)-[:LOCATED_AT]->(s)
+            CREATE CONSTRAINT country_name IF NOT EXISTS FOR (c:Country) REQUIRE c.name IS UNIQUE;
             """
         )
         session.run(
             """
-            MATCH (d:Device {name: "Device 1"})
-            MATCH (t:Tag {name: "Tag 1"})
-            CREATE (d)-[:TAGGED_WITH]->(t)
-            """
-        )
-        session.run(
-            """
-            MATCH (d:Device {name: "Device 1"})
-            MATCH (t:Tag {name: "Tag 1"})
-            CREATE (t)-[:TAGS]->(d)
-            """
-        )
-        session.run(
-            """
-            MATCH (t:Tag {name: "Tag 1"})
-            MATCH (s:Site {name: "Site 1"})
-            CREATE (t)-[:TAGGED_AT]->(s)
-            """
-        )
-        session.run(
-            """
-            MATCH (t:Tag {name: "Tag 1"})
-            MATCH (c:Country {name: "United States"})
-            CREATE (t)-[:TAGGED_IN]->(c)
-            """
-        )
-        session.run(
-            """
-            MATCH (s:Site {name: "Site 1"})
-            MATCH (c:Country {name: "United States"})
-            CREATE (s)-[:LOCATED_IN]->(c)
-            """
-        )
-        session.run(
-            """
-            MATCH (d:Device {name: "Device 1"})
-            MATCH (s:Site {name: "Site 1"})
-            CREATE (d)-[:LOCATED_AT]->(s)
+            CREATE CONSTRAINT tag_name IF NOT EXISTS FOR (t:Tag) REQUIRE t.name IS UNIQUE;
             """
         )

@@ -2,6 +2,7 @@ from os import name
 from typing import Dict, Sequence
 from fastapi import APIRouter, Depends, HTTPException
 from neo4j import Driver
+from neo4j.exceptions import ConstraintError
 
 from workshop_b2.lab2.database.models import (
     CountryModel,
@@ -28,15 +29,6 @@ def _build_filter_query(filters: Dict) -> str:
 # ------------------------------
 @router.post("/devices/")
 def create_device(item: DeviceModel, db: Driver = Depends(get_db)) -> DeviceModel:
-    existing_device = db.execute_query(
-        "MATCH (d:Device {name: $name}) RETURN d", {"name": item.name}
-    )
-    if existing_device.records:
-        raise HTTPException(
-            status_code=409, detail=f"Device {item.name} already exists"
-        )
-
-    query = ""
     query_params = item.model_dump()
     if item.site:
         query_filter = _build_filter_query(item.site.model_dump())
@@ -46,16 +38,21 @@ def create_device(item: DeviceModel, db: Driver = Depends(get_db)) -> DeviceMode
 
         query_params.pop("site")
         query_params["site_name"] = site.records[0]["s"]["name"]
-        query += """
+        query = """
         MATCH (s:Site {name: $site_name})
         CREATE (d:Device {name: $name, manufacturer: $manufacturer, status: $status})
         CREATE (d)-[:LOCATED_IN]->(s)
         """
     else:
-        query += """
+        query = """
         CREATE (d:Device {name: $name, manufacturer: $manufacturer, status: $status})
         """
-    db.execute_query(query, query_params)
+    try:
+        db.execute_query(query, query_params)
+    except ConstraintError:
+        raise HTTPException(
+            status_code=409, detail=f"Device ({item.name})already exists"
+        )
     device = db.execute_query(
         "MATCH (d:Device {name: $name})-[:LOCATED_IN]->(s:Site) RETURN d, s",
         {"name": item.name},
@@ -66,11 +63,11 @@ def create_device(item: DeviceModel, db: Driver = Depends(get_db)) -> DeviceMode
 
 @router.get("/devices/")
 def read_devices(db: Driver = Depends(get_db)) -> Sequence[DeviceModel]:
-    read_device_query = """
+    query = """
     MATCH (d:Device)-[:LOCATED_IN]->(s:Site)
     RETURN d, s
     """
-    result = db.execute_query(read_device_query)
+    result = db.execute_query(query)
 
     return [
         DeviceModel(**device["d"], site=SiteModel(**device["s"]))
@@ -83,23 +80,29 @@ def read_devices(db: Driver = Depends(get_db)) -> Sequence[DeviceModel]:
 # ------------------------------
 @router.post("/sites/")
 def create_site(item: SiteModel, db: Driver = Depends(get_db)) -> SiteModel:
-    create_site_query = """
+    query = """
     CREATE (s:Site {name: $name, label: $label, description: $description, address: $address})
     """
-    db.execute_query(create_site_query, item.model_dump())
+    try:
+        db.execute_query(query, item.model_dump())
+    except ConstraintError:
+        raise HTTPException(
+            status_code=409, detail=f"Site ({item.name}) already exists"
+        )
     site = db.execute_query(
         "MATCH (s:Site {name: $name}) RETURN s", {"name": item.name}
     ).records[0]
+
     return SiteModel(**site[0])
 
 
 @router.get("/sites/")
 def read_sites(db: Driver = Depends(get_db)) -> Sequence[SiteModel]:
-    read_device_query = """
+    query = """
     MATCH (s:Site)
     RETURN s
     """
-    result = db.execute_query(read_device_query)
+    result = db.execute_query(query)
 
     return [SiteModel(**s["s"]) for s in result.records]
 
@@ -107,34 +110,61 @@ def read_sites(db: Driver = Depends(get_db)) -> Sequence[SiteModel]:
 # ------------------------------
 # COUNTRIES
 # ------------------------------
-# @router.post("/countries/")
-# def create_country(
-#     item: CountryModel, db: Session = Depends(get_session)
-# ) -> CountryModel:
-#     # db.add(item)
-#     # db.commit()
-#     # db.refresh(item)
-#     return item
-#
-#
-# @router.get("/countries/")
-# def read_countries(db: Session = Depends(get_session)) -> Sequence[Country]:
-#     items = db.exec(select(CountryModel)).all()
-#     return items
+@router.post("/countries/")
+def create_country(item: CountryModel, db: Driver = Depends(get_db)) -> CountryModel:
+    query = """
+    CREATE (c:Country {name: $name, label: $label, description: $description, continent: $continent})
+    """
+    try:
+        db.execute_query(query, item.model_dump())
+    except ConstraintError:
+        raise HTTPException(
+            status_code=409, detail=f"Country ({item.name}) already exists"
+        )
+    country = db.execute_query(
+        "MATCH (c:Country {name: $name}) RETURN c", {"name": item.name}
+    ).records[0]
+
+    return CountryModel(**country[0])
+
+
+@router.get("/countries/")
+def read_countries(db: Driver = Depends(get_db)) -> Sequence[CountryModel]:
+    query = """
+    MATCH (c:Country)
+    RETURN c
+    """
+    result = db.execute_query(query)
+
+    return [CountryModel(**s["c"]) for s in result.records]
 
 
 # ------------------------------
 # TAGS
 # ------------------------------
-# @router.post("/tags/")
-# def create_tag(item: Tag, db: Session = Depends(get_session)) -> Tag:
-#     # db.add(item)
-#     # db.commit()
-#     # db.refresh(item)
-#     return item
-#
-#
-# @router.get("/tags/")
-# def read_tags(db: Session = Depends(get_session)) -> Sequence[Tag]:
-#     # items = db.exec(select(TagModel)).all()
-#     return items
+@router.post("/tags/")
+def create_tag(item: TagModel, db: Driver = Depends(get_db)) -> TagModel:
+    query = """
+    CREATE (t:Tag {name: $name, color: $color})
+    """
+    try:
+        db.execute_query(query, item.model_dump())
+    except ConstraintError:
+        raise HTTPException(status_code=409, detail=f"Tag ({item.name}) already exists")
+    tag = db.execute_query(
+        "MATCH (t:Tag {name: $name}) RETURN t", {"name": item.name}
+    ).records[0]
+
+    return TagModel(**tag[0])
+
+
+@router.get("/tags/")
+def read_tags(db: Driver = Depends(get_db)) -> Sequence[TagModel]:
+    # items = db.exec(select(TagModel)).all()
+    query = """
+    MATCH (t:Tag)
+    RETURN t
+    """
+    result = db.execute_query(query)
+
+    return [TagModel(**s["t"]) for s in result.records]
