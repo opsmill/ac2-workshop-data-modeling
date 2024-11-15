@@ -90,18 +90,18 @@ def create_site(item: SiteModel, db: Driver = Depends(get_db)) -> SiteModel:
     site = db.execute_query(
         "MATCH (s:Site {name: $name}) RETURN s", {"name": item.name}
     ).records[0]
-    return site[0]
+    return SiteModel(**site[0])
 
 
 @router.get("/sites/")
-def read_sites(db: Driver = Depends(get_db)):
+def read_sites(db: Driver = Depends(get_db)) -> Sequence[SiteModel]:
     read_device_query = """
     MATCH (s:Site)
     RETURN s
     """
     result = db.execute_query(read_device_query)
 
-    return result.records
+    return [SiteModel(**s["s"]) for s in result.records]
 
 
 # ------------------------------
