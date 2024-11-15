@@ -27,7 +27,7 @@ def _build_filter_query(filters: Dict) -> str:
 # DEVICES
 # ------------------------------
 @router.post("/devices/")
-def create_device(item: DeviceModel, db: Driver = Depends(get_db)):
+def create_device(item: DeviceModel, db: Driver = Depends(get_db)) -> DeviceModel:
     existing_device = db.execute_query(
         "MATCH (d:Device {name: $name}) RETURN d", {"name": item.name}
     )
@@ -57,20 +57,25 @@ def create_device(item: DeviceModel, db: Driver = Depends(get_db)):
         """
     db.execute_query(query, query_params)
     device = db.execute_query(
-        "MATCH (d:Device {name: $name}) RETURN d", {"name": item.name}
+        "MATCH (d:Device {name: $name})-[:LOCATED_IN]->(s:Site) RETURN d, s",
+        {"name": item.name},
     ).records[0]
-    return device[0]
+
+    return DeviceModel(**device["d"], site=SiteModel(**device["s"]))
 
 
 @router.get("/devices/")
-def read_devices(db: Driver = Depends(get_db)):
+def read_devices(db: Driver = Depends(get_db)) -> Sequence[DeviceModel]:
     read_device_query = """
-    MATCH (d:Device)
-    RETURN d
+    MATCH (d:Device)-[:LOCATED_IN]->(s:Site)
+    RETURN d, s
     """
     result = db.execute_query(read_device_query)
 
-    return result.records
+    return [
+        DeviceModel(**device["d"], site=SiteModel(**device["s"]))
+        for device in result.records
+    ]
 
 
 # ------------------------------
