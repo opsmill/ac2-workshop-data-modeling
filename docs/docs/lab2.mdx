@@ -1,0 +1,100 @@
+---
+title: Lab 2
+---
+
+## Lab 2 - Graph Database
+
+We're going to explore using a graph database (**Neo4j**) to show the differences between a traditional relational database.
+
+For this lab, we'll require Docker to spin up an instance of a Neo4j database.
+
+## Lab Commands
+
+We provide a few commands to be able to easily manage the lab using Invoke.
+
+```shell
+❯ invoke -l
+Available tasks:
+
+  lab2-destroy   Destroy Lab2.
+  lab2-load      Load devices into Lab2.
+  lab2-start     Start Lab2.
+```
+
+:::info
+Omitted non-lab2 related Invoke tasks.
+:::
+
+## 1. Starting and exploring the API
+
+Let's start by starting the API using Invoke.
+
+```shell
+❯ invoke lab2-start
+ Network ac2-workshop-data-modeling_default  Creating
+ Network ac2-workshop-data-modeling_default  Created
+ Volume "ac2-workshop-data-modeling_database_logs"  Creating
+ Volume "ac2-workshop-data-modeling_database_logs"  Created
+ Volume "ac2-workshop-data-modeling_database_data"  Creating
+ Volume "ac2-workshop-data-modeling_database_data"  Created
+ Container ac2-workshop-data-modeling-database-1  Creating
+ Container ac2-workshop-data-modeling-database-1  Created
+ Container ac2-workshop-data-modeling-database-1  Starting
+ Container ac2-workshop-data-modeling-database-1  Started
+INFO     Using path workshop_b2/lab2/main.py                                    
+INFO     Resolved absolute path                                                 
+         /Users/Mikhail/cloned/ac2-workshop-data-modeling/workshop_b2/lab2/main.
+         py                                                                     
+INFO     Searching for package file structure from directories with __init__.py 
+         files                                                                  
+INFO     Importing from /Users/Mikhail/cloned/ac2-workshop-data-modeling        
+                                                                                
+ ╭─ Python package file structure ─╮                                            
+ │                                 │                                            
+ │  📁 workshop_b2                 │                                            
+ │  ├── 🐍 __init__.py             │                                            
+ │  └── 📁 lab2                    │                                            
+ │      ├── 🐍 __init__.py         │                                            
+ │      └── 🐍 main.py             │                                            
+ │                                 │                                            
+ ╰─────────────────────────────────╯                                            
+                                                                                
+INFO     Importing module workshop_b2.lab2.main                                 
+INFO     Found importable FastAPI app                                           
+                                                                                
+ ╭──────── Importable FastAPI app ─────────╮                                    
+ │                                         │                                    
+ │  from workshop_b2.lab2.main import app  │                                    
+ │                                         │                                    
+ ╰─────────────────────────────────────────╯                                    
+                                                                                
+INFO     Using import string workshop_b2.lab2.main:app                          
+                                                                                
+ ╭─────────── FastAPI CLI - Production mode ───────────╮                        
+ │                                                     │                        
+ │  Serving at: http://0.0.0.0:8001                    │                        
+ │                                                     │                        
+ │  API docs: http://0.0.0.0:8001/docs                 │                        
+ │                                                     │                        
+ │  Running in production mode, for development use:   │                        
+ │                                                     │                        
+ │  fastapi dev                                        │                        
+ │                                                     │                        
+ ╰─────────────────────────────────────────────────────╯                        
+                                                                                
+INFO:     Will watch for changes in these directories: ['/Users/Mikhail/cloned/ac2-workshop-data-modeling']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [63280] using WatchFiles
+INFO:     Started server process [63284]
+INFO:     Waiting for application startup.
+Unable to retrieve routing information
+INFO:     Application startup complete.
+```
+
+After you see the **Application startup complete.** means the API and database are ready.
+
+Let's start by quickly navigating to the [API](http://localhost:8001/docs).
+
+We can see we have multiple endpoints to manage creating and reading `devices`, `sites`, `countries`, and `tags`.
+
+![api-docs](./images/lab2/01-api-docs.png)

@@ -70,7 +70,7 @@ def create_lab1_devices(url: str, site_id: int) -> httpx.Response:
 
 @task
 def lab1_start(context: Context, reload: bool = True) -> None:
-    """Start lab1."""
+    """Start Lab1."""
     exec_cmd = "fastapi run workshop_b2/lab1/main.py"
     if reload:
         exec_cmd += " --reload"
@@ -79,6 +79,7 @@ def lab1_start(context: Context, reload: bool = True) -> None:
 
 @task
 def lab1_destroy(context: Context, reload: bool = False) -> None:
+    """Destroy Lab1."""
     context.run("rm database.db")
 
 
@@ -86,6 +87,7 @@ def lab1_destroy(context: Context, reload: bool = False) -> None:
 def lab1_load(
     context: Context, url: str = "http://localhost:8000", site_name: str = "site-1"
 ) -> None:
+    """Load devices into Lab1."""
     with httpx.Client() as client:
         response = client.get(f"{url}/api/sites/")
         response.raise_for_status()
@@ -110,6 +112,7 @@ def lab1_load(
 
 @task
 def lab1_test(context: Context) -> None:
+    """Run pytest against Lab1."""
     exec_cmd = "pytest tests/lab1"
     context.run(exec_cmd)
 
@@ -126,6 +129,7 @@ def create_lab2_devices(url: str, site_name: str) -> httpx.Response:
 
 @task
 def lab2_start(context: Context, reload: bool = True) -> None:
+    """Start Lab2."""
     exec_cmd = "fastapi run workshop_b2/lab2/main.py --port 8001"
     if reload:
         exec_cmd += " --reload"
@@ -135,6 +139,7 @@ def lab2_start(context: Context, reload: bool = True) -> None:
 
 @task
 def lab2_destroy(context: Context, reload: bool = False) -> None:
+    """Destroy Lab2."""
     context.run("docker compose down -v")
 
 
@@ -142,6 +147,7 @@ def lab2_destroy(context: Context, reload: bool = False) -> None:
 def lab2_load(
     context: Context, url: str = "http://localhost:8001", site_name: str = "site-1"
 ) -> None:
+    """Load devices into Lab2."""
     with httpx.Client() as client:
         response = client.get(f"{url}/api/sites/")
         response.raise_for_status()
@@ -162,7 +168,8 @@ def lab2_load(
         response.raise_for_status()
 
 
-@task
-def lab2_test(context: Context) -> None:
-    exec_cmd = "pytest tests/lab2"
-    context.run(exec_cmd)
+# @task
+# def lab2_test(context: Context) -> None:
+#     """Run pytest against Lab2."""
+#     exec_cmd = "pytest tests/lab2"
+#     context.run(exec_cmd)
