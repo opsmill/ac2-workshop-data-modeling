@@ -4,7 +4,7 @@ title: Lab 2
 
 ## Lab 2 - Graph Database
 
-We're going to explore using a graph database (**Neo4j**) to show the differences between a traditional relational database.
+We're going to explore using a graph database (**Neo4j**) to show the differences between a traditional relational database and a graph database.
 
 For this lab, we'll require Docker to spin up an instance of a Neo4j database.
 
@@ -91,10 +91,22 @@ Unable to retrieve routing information
 INFO:     Application startup complete.
 ```
 
-After you see the **Application startup complete.** means the API and database are ready.
-
-Let's start by quickly navigating to the [API](http://localhost:8001/docs).
+Let's start by quickly navigating to the [API](http://localhost:8001/docs) once you see **Application startup complete**.
 
 We can see we have multiple endpoints to manage creating and reading `devices`, `sites`, `countries`, and `tags`.
 
 ![api-docs](./images/lab2/01-api-docs.png)
+
+We can also navigate to the [Neo4j UI](http://localhost:7474), we can look at the database.
+
+Click on the **database** icon in the top left.
+
+![neo4j-menu](./images/lab2/02-neo4j-menu.png)
+
+We can now see that we have node labels that correlate to each API endpoint.
+
+![neo4j-node-labels](./images/lab2/03-neo4j-node-labels.png)
+
+If you click on any of the labels that match our API endpoints, it should return no records at this time.
+
+![neo4j-empty-tags](./images/lab2/04-neo4j-empty-node-labels.png)
