@@ -59,9 +59,12 @@ def lint_all(context: Context) -> None:
 ###
 ## Lab Commands
 ###
-def create_lab1_devices(url: str) -> httpx.Response:
-    dev = Lab1Models.Device(name=f"device-{str(uuid.uuid4())[-8:]}")
+def create_lab1_devices(url: str, site_id: int) -> httpx.Response:
+    dev = Lab1Models.DeviceModel(
+        name=f"device-{str(uuid.uuid4())[-8:]}", manufacturer="cisco", site_id=site_id
+    )
     with httpx.Client() as client:
+        print(f"Creating device: {dev.model_dump()}")
         return client.post(f"{url}/api/devices/", json=dev.model_dump())
 
 
@@ -80,9 +83,28 @@ def lab1_destroy(context: Context, reload: bool = False) -> None:
 
 
 @task
-def lab1_load(context: Context, url: str = "http://localhost:8000"):
-    for idx in range(0, 5):
-        response = create_lab1_devices(url=url)
+def lab1_load(
+    context: Context, url: str = "http://localhost:8000", site_name: str = "site-1"
+) -> None:
+    with httpx.Client() as client:
+        response = client.get(f"{url}/api/sites/")
+        response.raise_for_status()
+        site_id = [s["id"] for s in response.json() if s["name"] == site_name]
+        if not site_id:
+            response = client.post(
+                f"{url}/api/sites/",
+                json={
+                    "name": site_name,
+                    "site_id": site_id,
+                    "address": "123 Wall Street",
+                    "label": site_name,
+                },
+            )
+            response.raise_for_status()
+            site_id = response.json()["id"]
+
+    for _ in range(0, 5):
+        response = create_lab1_devices(url=url, site_id=site_id)
         response.raise_for_status()
 
 
@@ -92,9 +114,13 @@ def lab1_test(context: Context) -> None:
     context.run(exec_cmd)
 
 
-def create_lab2_devices(url: str) -> httpx.Response:
-    dev = Lab2Models.Device(name=f"device-{str(uuid.uuid4())[-8:]}")
+def create_lab2_devices(url: str, site_name: str) -> httpx.Response:
+    dev = Lab2Models.DeviceModel(
+        name=f"device-{str(uuid.uuid4())[-8:]}",
+        site={"name": site_name, "label": site_name, "address": "123 Wall Street"},
+    )
     with httpx.Client() as client:
+        print(f"Creating device: {dev.model_dump()}")
         return client.post(f"{url}/api/devices/", json=dev.model_dump())
 
 
@@ -113,9 +139,26 @@ def lab2_destroy(context: Context, reload: bool = False) -> None:
 
 
 @task
-def lab2_load(context: Context, url: str = "http://localhost:8001") -> None:
-    for idx in range(0, 5):
-        response = create_lab2_devices(url=url)
+def lab2_load(
+    context: Context, url: str = "http://localhost:8001", site_name: str = "site-1"
+) -> None:
+    with httpx.Client() as client:
+        response = client.get(f"{url}/api/sites/")
+        response.raise_for_status()
+        site_id = [s["name"] for s in response.json() if s["name"] == site_name]
+        if not site_id:
+            response = client.post(
+                f"{url}/api/sites/",
+                json={
+                    "name": site_name,
+                    "label": site_name,
+                    "address": "123 Wall Street",
+                },
+            )
+            response.raise_for_status()
+
+    for _ in range(0, 5):
+        response = create_lab2_devices(url=url, site_name=site_name)
         response.raise_for_status()
 
 
