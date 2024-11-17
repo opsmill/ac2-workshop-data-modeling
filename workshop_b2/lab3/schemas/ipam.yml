@@ -1,0 +1,47 @@
+---
+# yaml-language-server: $schema=https://schema.infrahub.app/infrahub/schema/latest.json
+version: "1.0"
+
+nodes:
+  # --------------------  IPAM (Prefix, IP Address)  --------------------
+  - name: IPAddress
+    namespace: Ipam
+    description: IP Address
+    label: IP Address
+    icon: mdi:ip
+    include_in_menu: false
+    order_by:
+      - address__value
+    display_labels:
+      - address__value
+    inherit_from:
+      - BuiltinIPAddress
+    uniqueness_constraints:
+      - [ip_namespace, address__value]
+    human_friendly_id:
+      - address__value
+      - ip_namespace__name__value
+    attributes:
+      - name: fqdn
+        label: FQDN
+        kind: Text
+        optional: true
+        # https://stackoverflow.com/questions/11809631/fully-qualified-domain-name-validation
+        regex: (?=^.{1,253}$)(^(((?!-)[a-zA-Z0-9-]{1,63}(?<!-))|((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63})$)
+    relationships:
+      - name: interface
+        peer: DcimInterfaceL3
+        optional: true
+        cardinality: one
+
+  - name: Prefix
+    namespace: Ipam
+    description: IPv4 or IPv6 network (with mask)
+    icon: mdi:ip-network
+    include_in_menu: false
+    label: Prefix
+    inherit_from:
+      - BuiltinIPPrefix
+    human_friendly_id:
+      - prefix__value
+      - ip_namespace__name__value
