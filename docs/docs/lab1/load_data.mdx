@@ -1,0 +1,38 @@
+---
+title: Load data
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import ReferenceLink from "../../src/components/Card";
+
+## Load some data into the application
+
+Before taking a closer look at the different schemas, we're gonna load some data into the application to make it a bit more interesting.
+
+:::info
+The application must be running on port 8000 while running the next command so it's important to keep the application running on one terminal and to start a new one to execute the command below
+:::
+
+```shell
+invoke lab1-start --reload
+```
+
+## Query the data via the REST API
+
+<ReferenceLink title="List all devices in the REST API" url="http://localhost:8000/api/devices/" openInNewTab />
+
+## Query the data via the GraphQL API
+
+<ReferenceLink title="GraphQL Sandbox" url="http://localhost:8000/graphql" openInNewTab />
+
+```graphql
+query {
+  devices {
+    name
+    site {
+      name
+    }
+  }
+}
+```

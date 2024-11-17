@@ -1,31 +1,6 @@
 ---
-title: Lab 2
+title: Explore the application
 ---
-
-## Lab 2 - Graph Database
-
-We're going to explore using a graph database (**Neo4j**) to show the differences between a traditional relational database and a graph database.
-
-For this lab, Docker is required to spin up an instance of a Neo4j database.
-
-## Lab Commands
-
-There is a CLI provided to be able to easily manage the lab using Invoke. List the available Invoke tasks.
-
-```shell
-invoke -l
-```
-```shell
-Available tasks:
-
-  lab2-destroy   Destroy Lab2.
-  lab2-load      Load devices into Lab2.
-  lab2-start     Start Lab2.
-```
-
-:::info
-Omitted non-lab2 related Invoke tasks.
-:::
 
 ## 1. Starting and exploring the API
 
@@ -103,21 +78,23 @@ The API is available on port 8001
 
 There are multiple endpoints to manage creating and reading **devices**, **sites**, **countries**, and **tags**.
 
-![api-docs](./images/lab2/01-api-docs.png)
+![api-docs](../images/lab2/01-api-docs.png)
 
 It is possible to see a graphical representation of the Neo4j database. Navigate to the local [Neo4j UI](http://localhost:7474).
 
 Click on the **database** icon in the top left.
 
-![neo4j-menu](./images/lab2/02-neo4j-menu.png)
+![neo4j-menu](../images/lab2/02-neo4j-menu.png)
 
 There are node labels that correlate to each API endpoint.
 
-![neo4j-node-labels](./images/lab2/03-neo4j-node-labels.png)
+![neo4j-node-labels](../images/lab2/03-neo4j-node-labels.png)
 
 Click on any of the labels that match the API endpoints and the search should return no records at this time.
 
-![neo4j-empty-tags](./images/lab2/04-neo4j-empty-node-labels.png)
+![neo4j-empty-tags](../images/lab2/04-neo4j-empty-node-labels.png)
+
+## 2. Loading data
 
 Open a new terminal window and load in dummy data.
 
@@ -139,23 +116,23 @@ Creating device: {'name': 'device-e1f047aa', 'manufacturer': None, 'status': <De
 
 The page should auto refresh and now there will be a new relationship called **LOCATED_IN**.
 
-![neo4j-pop-1](./images/lab2/05-neo4j-populated-1.png)
+![neo4j-pop-1](../images/lab2/05-neo4j-populated-1.png)
 
 Click on the **Device** Node Label.
 
-![neo4j-device-base](./images/lab2/06-neo4j-base-device-1.png)
+![neo4j-device-base](../images/lab2/06-neo4j-base-device-1.png)
 
 There should be 5 device nodes displayed.
 
-![neo4j-device-base](./images/lab2/07-neo4j-device-nodes.png)
+![neo4j-device-base](../images/lab2/07-neo4j-device-nodes.png)
 
 Click on any of the nodes and then click on the relationship icon.
 
-![neo4j-device-base](./images/lab2/08-neo4j-device-relationships-1.png)
+![neo4j-device-base](../images/lab2/08-neo4j-device-relationships-1.png)
 
 All current nodes have a **LOCATED_IN** relationship to **site-1**. This relationship mimics a [Foreign Key](https://www.reddit.com/r/SQL/comments/qras0z/please_explain_foreign_keys_to_me_like_i_am_six/) relationship.
 
-![neo4j-device-base](./images/lab2/09-neo4j-device-relationships-2.png)
+![neo4j-device-base](../images/lab2/09-neo4j-device-relationships-2.png)
 
 Navigate to the [GraphQL UI](http://localhost:8001/graphql). Copy in the following query and then execute it.
 
@@ -183,11 +160,11 @@ query {
 
 The query provides the devices and site information for each device.
 
-![neo4j-device-base](./images/lab2/10-neo4j-graphql-query-1.png)
+![neo4j-device-base](../images/lab2/10-neo4j-graphql-query-1.png)
 
 Scroll down to see the data fetched for **sites**, **tags**, and **countries**.
 
-![neo4j-device-base](./images/lab2/11-neo4j-graphql-query-2.png)
+![neo4j-device-base](../images/lab2/11-neo4j-graphql-query-2.png)
 
 :::warning
 TODO: We can load in another site and show two sites and their relationship to devices, but will omit for now.
@@ -201,4 +178,3 @@ The next steps will implement a [Many-to-Many](https://en.wikipedia.org/wiki/Man
 :::success
 Time to get our hands on some code!
 :::
-

@@ -8,7 +8,7 @@ const config: Config = {
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://your-docusaurus-site.example.com',
+  url: 'https://autocon2-workshop-data-modeling.pages.dev/',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
@@ -53,17 +53,17 @@ const config: Config = {
     //   isCloseable: true,
     // },
     navbar: {
-      logo: {
-        alt: "Infrahub",
-        src: "img/infrahub-hori.svg",
-        srcDark: "img/infrahub-hori-dark.svg",
-      },
+      // logo: {
+      //   alt: "Autocon2",
+      //   src: "img/naf_logo.png",
+      //   srcDark: "img/naf_logo.png",
+      // },
       items: [
         {
           type: "docSidebar",
           sidebarId: "docsSidebar",
           position: "left",
-          label: "DC Fabric Demo",
+          label: "Autocon2 - Data Modeling Workshop",
         },
         // {
         //   type: "search",
