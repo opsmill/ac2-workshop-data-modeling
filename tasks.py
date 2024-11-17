@@ -4,9 +4,6 @@ from pathlib import Path
 import httpx
 from invoke import Context, task
 
-from workshop_b2.lab1.database import models as Lab1Models
-from workshop_b2.lab2.database import models as Lab2Models
-
 
 MAIN_DIRECTORY_PATH = Path(__file__).parent
 
@@ -57,9 +54,11 @@ def lint_all(context: Context) -> None:
 
 
 ###
-## Lab Commands
+## Lab 1 Commands
 ###
 def create_lab1_devices(url: str, site_id: int) -> httpx.Response:
+    from workshop_b2.lab1.database import models as Lab1Models
+
     dev = Lab1Models.DeviceModel(
         name=f"device-{str(uuid.uuid4())[-8:]}", manufacturer="cisco", site_id=site_id
     )
@@ -117,10 +116,21 @@ def lab1_test(context: Context) -> None:
     context.run(exec_cmd)
 
 
-def create_lab2_devices(url: str, site_name: str) -> httpx.Response:
+###
+## Lab 2 Commands
+###
+def create_lab2_devices(
+    url: str,
+    site_name: str,
+    wants_tags: bool,
+    tags: list["Tag"] | None = None,
+) -> httpx.Response:
+    from workshop_b2.lab2.database import models as Lab2Models
+
     dev = Lab2Models.DeviceModel(
         name=f"device-{str(uuid.uuid4())[-8:]}",
         site={"name": site_name, "label": site_name, "address": "123 Wall Street"},
+        tags=tags if wants_tags else [],
     )
     with httpx.Client() as client:
         print(f"Creating device: {dev.model_dump()}")
@@ -145,7 +155,10 @@ def lab2_destroy(context: Context, reload: bool = False) -> None:
 
 @task
 def lab2_load(
-    context: Context, url: str = "http://localhost:8001", site_name: str = "site-1"
+    context: Context,
+    url: str = "http://localhost:8001",
+    site_name: str = "site-1",
+    tags: bool = False,
 ) -> None:
     """Load devices into Lab2."""
     with httpx.Client() as client:
@@ -163,8 +176,24 @@ def lab2_load(
             )
             response.raise_for_status()
 
+    default_tags = [
+        {"name": "tag-1", "color": "red"},
+        {"name": "tag-2", "color": "blue"},
+    ]
+    if tags:
+        with httpx.Client() as client:
+            response = client.get(f"{url}/api/tags/")
+            response.raise_for_status()
+            found_tags = response.json()
+            for tag in default_tags:
+                if tag not in found_tags:
+                    response = client.post(f"{url}/api/tags/", json=tag)
+                    response.raise_for_status()
     for _ in range(0, 5):
-        response = create_lab2_devices(url=url, site_name=site_name)
+        device_tags = [default_tags[_ % 2]] if tags else []
+        response = create_lab2_devices(
+            url=url, site_name=site_name, wants_tags=tags, tags=device_tags
+        )
         response.raise_for_status()
 
 

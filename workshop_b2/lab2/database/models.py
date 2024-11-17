@@ -4,9 +4,9 @@ from typing import Dict
 from fastapi import HTTPException
 from neo4j import Driver
 from neo4j.exceptions import ConstraintError
+from pydantic import Field
 
 from workshop_b2.models import Device, Site, Country, Tag
-from workshop_b2.lab2.database import get_db
 
 
 def _build_filter_query(filters: Dict) -> str:
@@ -15,6 +15,29 @@ def _build_filter_query(filters: Dict) -> str:
     )
     query_filter = "{" + query_filter + "}" if query_filter else ""
     return query_filter
+
+
+class TagMixin:
+    tags: list[Tag] = Field(default_factory=list)
+
+    def add_tags(self, db: Driver, tags: list[Tag]):
+        """Add tags to a node.
+
+        Args:
+            db (Driver): Neo4j driver instance.
+            tags (list[Tag]): List of tags to add.
+        """
+        node_label = self.__class__.__name__.replace("Model", "").title()
+        node_short = node_label[0]
+        tag = tags[0]
+        query = (
+            f"MATCH ({node_short}:{node_label}" + " {name: $name})"
+            "OPTIONAL MATCH (t:Tag {name: " + f'"{tag.name}"' + "})"
+            f"MERGE ({node_short})-[:TAGGED]->(t)"
+        )
+        db.execute_query(
+            query, {"name": self.name, "tags": [t.model_dump() for t in tags]}
+        )
 
 
 class CountryModel(Country):
@@ -127,7 +150,7 @@ class SiteModel(Site):
         return SiteModel(**site[0])
 
 
-class DeviceModel(Device):
+class DeviceModel(Device, TagMixin):
     site: SiteModel
 
     @staticmethod
@@ -142,11 +165,12 @@ class DeviceModel(Device):
         """
         query = """
         MATCH (d:Device)-[:LOCATED_IN]->(s:Site)
-        RETURN d, s
+        OPTIONAL MATCH (d)-[:TAGGED]->(t:Tag)
+        RETURN d, s, t
         """
         result = db.execute_query(query)
         return [
-            DeviceModel(**device["d"], site=SiteModel(**device["s"]))
+            DeviceModel(**device["d"], site=SiteModel(**device["s"]), tags=device["t"])
             for device in result.records
         ]
 
@@ -170,6 +194,8 @@ class DeviceModel(Device):
             db (Driver): Neo4j driver instance.
         """
         query_params = self.model_dump()
+        if not query_params["tags"]:
+            query_params.pop("tags")
         if self.site:
             found_site = self._find_site(db)
             if found_site:
@@ -187,6 +213,7 @@ class DeviceModel(Device):
                 status_code=409, detail=f"Device ({self.name})already exists"
             )
 
+        self.add_tags(db, self.tags)
         return self.get(db)
 
     def get(self, db: Driver):
