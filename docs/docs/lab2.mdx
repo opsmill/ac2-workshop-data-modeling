@@ -6,14 +6,16 @@ title: Lab 2
 
 We're going to explore using a graph database (**Neo4j**) to show the differences between a traditional relational database and a graph database.
 
-For this lab, we'll require Docker to spin up an instance of a Neo4j database.
+For this lab, Docker is required to spin up an instance of a Neo4j database.
 
 ## Lab Commands
 
-We provide a few commands to be able to easily manage the lab using Invoke.
+There is a CLI provided to be able to easily manage the lab using Invoke. List the available Invoke tasks.
 
 ```shell
-❯ invoke -l
+invoke -l
+```
+```shell
 Available tasks:
 
   lab2-destroy   Destroy Lab2.
@@ -27,10 +29,12 @@ Omitted non-lab2 related Invoke tasks.
 
 ## 1. Starting and exploring the API
 
-Let's start by starting the API using Invoke.
+The first step is to start the API using Invoke.
 
 ```shell
-❯ invoke lab2-start
+invoke lab2-start
+```
+```shell
  Network ac2-workshop-data-modeling_default  Creating
  Network ac2-workshop-data-modeling_default  Created
  Volume "ac2-workshop-data-modeling_database_logs"  Creating
@@ -91,22 +95,110 @@ Unable to retrieve routing information
 INFO:     Application startup complete.
 ```
 
-Let's start by quickly navigating to the [API](http://localhost:8001/docs) once you see **Application startup complete**.
+Navigate to the [API](http://localhost:8001/docs) once you see **Application startup complete**.
 
-We can see we have multiple endpoints to manage creating and reading `devices`, `sites`, `countries`, and `tags`.
+:::info
+The API is available on port 8001
+:::
+
+There are multiple endpoints to manage creating and reading **devices**, **sites**, **countries**, and **tags**.
 
 ![api-docs](./images/lab2/01-api-docs.png)
 
-We can also navigate to the [Neo4j UI](http://localhost:7474), we can look at the database.
+It is possible to see a graphical representation of the Neo4j database. Navigate to the local [Neo4j UI](http://localhost:7474).
 
 Click on the **database** icon in the top left.
 
 ![neo4j-menu](./images/lab2/02-neo4j-menu.png)
 
-We can now see that we have node labels that correlate to each API endpoint.
+There are node labels that correlate to each API endpoint.
 
 ![neo4j-node-labels](./images/lab2/03-neo4j-node-labels.png)
 
-If you click on any of the labels that match our API endpoints, it should return no records at this time.
+Click on any of the labels that match the API endpoints and the search should return no records at this time.
 
 ![neo4j-empty-tags](./images/lab2/04-neo4j-empty-node-labels.png)
+
+Open a new terminal window and load in dummy data.
+
+:::warning
+This step is important as the API must remain running and will be in the foreground of the previous terminal.
+:::
+
+
+```shell
+invoke lab2-load
+```
+```shell
+Creating device: {'name': 'device-9b9ba14a', 'manufacturer': None, 'status': <DeviceStatus.ACTIVE: 'active'>, 'site': {'name': 'site-1', 'label': 'site-1', 'description': None, 'address': '123 Wall Street'}}
+Creating device: {'name': 'device-0dc44bef', 'manufacturer': None, 'status': <DeviceStatus.ACTIVE: 'active'>, 'site': {'name': 'site-1', 'label': 'site-1', 'description': None, 'address': '123 Wall Street'}}
+Creating device: {'name': 'device-eb98ce97', 'manufacturer': None, 'status': <DeviceStatus.ACTIVE: 'active'>, 'site': {'name': 'site-1', 'label': 'site-1', 'description': None, 'address': '123 Wall Street'}}
+Creating device: {'name': 'device-20262e7d', 'manufacturer': None, 'status': <DeviceStatus.ACTIVE: 'active'>, 'site': {'name': 'site-1', 'label': 'site-1', 'description': None, 'address': '123 Wall Street'}}
+Creating device: {'name': 'device-e1f047aa', 'manufacturer': None, 'status': <DeviceStatus.ACTIVE: 'active'>, 'site': {'name': 'site-1', 'label': 'site-1', 'description': None, 'address': '123 Wall Street'}}
+```
+
+The page should auto refresh and now there will be a new relationship called **LOCATED_IN**.
+
+![neo4j-pop-1](./images/lab2/05-neo4j-populated-1.png)
+
+Click on the <span style="color:#F16667">**Device**</span> Node Label.
+
+![neo4j-device-base](./images/lab2/06-neo4j-base-device-1.png)
+
+There should be 5 device nodes displayed.
+
+![neo4j-device-base](./images/lab2/07-neo4j-device-nodes.png)
+
+Click on any of the nodes and then click on the relationship icon.
+
+![neo4j-device-base](./images/lab2/08-neo4j-device-relationships-1.png)
+
+All current nodes have a **LOCATED_IN** relationship to **site-1**. This relationship mimics a [Foreign Key](https://www.reddit.com/r/SQL/comments/qras0z/please_explain_foreign_keys_to_me_like_i_am_six/) relationship.
+
+![neo4j-device-base](./images/lab2/09-neo4j-device-relationships-2.png)
+
+Navigate to the [GraphQL UI](http://localhost:8001/graphql). Copy in the following query and then execute it.
+
+```graphql
+query {
+  devices {
+    name
+    manufacturer
+    site {
+      name
+      address
+    }
+  }
+  sites {
+    name
+  }
+  tags {
+    name
+  }
+  countries {
+    name
+  }
+}
+```
+
+The query provides the devices and site information for each device.
+
+![neo4j-device-base](./images/lab2/10-neo4j-graphql-query-1.png)
+
+Scroll down to see the data fetched for **sites**, **tags**, and **countries**.
+
+![neo4j-device-base](./images/lab2/11-neo4j-graphql-query-2.png)
+
+:::warning
+TODO: We can load in another site and show two sites and their relationship to devices, but will omit for now.
+``invoke lab2-load --site-name site-2``
+:::
+
+Currently, tags are a standalone model and do not have relationships with any other models. It may prove useful to allow multiple tags to be added to multiple devices.
+
+The next steps will implement a [Many-to-Many](https://en.wikipedia.org/wiki/Many-to-many_(data_model)) relationship between tags and devices within a graph database.
+
+:::success
+Time to get our hands on some code!
+:::
+
