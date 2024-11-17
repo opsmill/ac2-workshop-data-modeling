@@ -17,9 +17,9 @@ class DeviceStatus(str, Enum):
 
 
 class Location(BaseModel):
-    name: str = Field(description="Unique identifier of a location")
+    name: str
     label: str
-    description: str | None
+    description: str | None = None
 
 
 class Country(Location):
@@ -27,15 +27,17 @@ class Country(Location):
 
 
 class Site(Location):
-    address: str | None
+    address: str
+
+
+class Tag(BaseModel):
+    name: str
+    color: str
 
 
 class Device(BaseModel):
     name: str
     manufacturer: str | None = None
     status: DeviceStatus = DeviceStatus.ACTIVE
-
-
-class Tag(BaseModel):
-    name: str
-    color: str
+    # Step 1: Add tags to the Device Model
+    tags: list[Tag] = Field(default_factory=list)

@@ -1,15 +1,47 @@
-from sqlmodel import Session, SQLModel, create_engine
+from neo4j import GraphDatabase, Session
 
-sqlite_file_name = "database.db"
-sqlite_url = f"sqlite:///{sqlite_file_name}"
+db_server = "localhost"
+db_url = f"neo4j://{db_server}"
 
-engine = create_engine(sqlite_url)
-
-
-def create_db_and_tables():
-    SQLModel.metadata.create_all(engine)
+db = None
 
 
-def get_session():
-    with Session(engine) as session:
+def get_db():
+    global db
+    if db:
+        return db
+    db = GraphDatabase.driver(db_url, auth=("neo4j", "admin"))
+    return db
+
+
+def get_session() -> Session:
+    global db
+    if db is None:
+        db = get_db()
+    with db.session(database="neo4j") as session:
         yield session
+
+
+def create_initial_constraints() -> None:
+    db = get_db()
+    with db.session(database="neo4j") as session:
+        session.run(
+            """
+            CREATE CONSTRAINT site_name IF NOT EXISTS FOR (s:Site) REQUIRE s.name IS UNIQUE;
+            """
+        )
+        session.run(
+            """
+            CREATE CONSTRAINT device_name IF NOT EXISTS FOR (d:Device) REQUIRE d.name IS UNIQUE;
+            """
+        )
+        session.run(
+            """
+            CREATE CONSTRAINT country_name IF NOT EXISTS FOR (c:Country) REQUIRE c.name IS UNIQUE;
+            """
+        )
+        session.run(
+            """
+            CREATE CONSTRAINT tag_name IF NOT EXISTS FOR (t:Tag) REQUIRE t.name IS UNIQUE;
+            """
+        )

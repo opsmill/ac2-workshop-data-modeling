@@ -15,10 +15,10 @@ class CountryType(LocationType): ...
 class SiteType(LocationType): ...
 
 
+@strawberry.experimental.pydantic.type(model=Tag, all_fields=True)
+class TagType: ...
+
+
 @strawberry.experimental.pydantic.type(model=Device, all_fields=True)
 class DeviceType:
     site: SiteType
-
-
-@strawberry.experimental.pydantic.type(model=Tag, all_fields=True)
-class TagType: ...

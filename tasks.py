@@ -1,6 +1,9 @@
+import uuid
 from pathlib import Path
 
+import httpx
 from invoke import Context, task
+
 
 MAIN_DIRECTORY_PATH = Path(__file__).parent
 
@@ -48,3 +51,154 @@ def lint_all(context: Context) -> None:
     lint_yaml(context)
     lint_ruff(context)
     lint_pyright(context)
+
+
+###
+## Lab 1 Commands
+###
+def create_lab1_devices(url: str, site_id: int) -> httpx.Response:
+    from workshop_b2.lab1.database import models as Lab1Models
+
+    dev = Lab1Models.DeviceModel(
+        name=f"device-{str(uuid.uuid4())[-8:]}", manufacturer="cisco", site_id=site_id
+    )
+    with httpx.Client() as client:
+        print(f"Creating device: {dev.model_dump()}")
+        return client.post(f"{url}/api/devices/", json=dev.model_dump())
+
+
+@task
+def lab1_start(context: Context, reload: bool = True) -> None:
+    """Start Lab1."""
+    exec_cmd = "fastapi run workshop_b2/lab1/main.py"
+    if reload:
+        exec_cmd += " --reload"
+    context.run(exec_cmd)
+
+
+@task
+def lab1_destroy(context: Context, reload: bool = False) -> None:
+    """Destroy Lab1."""
+    context.run("rm database.db")
+
+
+@task
+def lab1_load(
+    context: Context, url: str = "http://localhost:8000", site_name: str = "site-1"
+) -> None:
+    """Load devices into Lab1."""
+    with httpx.Client() as client:
+        response = client.get(f"{url}/api/sites/")
+        response.raise_for_status()
+        site_id = [s["id"] for s in response.json() if s["name"] == site_name]
+        if not site_id:
+            response = client.post(
+                f"{url}/api/sites/",
+                json={
+                    "name": site_name,
+                    "site_id": site_id,
+                    "address": "123 Wall Street",
+                    "label": site_name,
+                },
+            )
+            response.raise_for_status()
+            site_id = response.json()["id"]
+
+    for _ in range(0, 5):
+        response = create_lab1_devices(url=url, site_id=site_id)
+        response.raise_for_status()
+
+
+@task
+def lab1_test(context: Context) -> None:
+    """Run pytest against Lab1."""
+    exec_cmd = "pytest tests/lab1"
+    context.run(exec_cmd)
+
+
+###
+## Lab 2 Commands
+###
+def create_lab2_devices(
+    url: str,
+    site_name: str,
+    wants_tags: bool,
+    tags: list["Tag"] | None = None,
+) -> httpx.Response:
+    from workshop_b2.lab2.database import models as Lab2Models
+
+    dev = Lab2Models.DeviceModel(
+        name=f"device-{str(uuid.uuid4())[-8:]}",
+        site={"name": site_name, "label": site_name, "address": "123 Wall Street"},
+        tags=tags if wants_tags else [],
+    )
+    with httpx.Client() as client:
+        print(f"Creating device: {dev.model_dump()}")
+        return client.post(f"{url}/api/devices/", json=dev.model_dump())
+
+
+@task
+def lab2_start(context: Context, reload: bool = True) -> None:
+    """Start Lab2."""
+    exec_cmd = "fastapi run workshop_b2/lab2/main.py --port 8001"
+    if reload:
+        exec_cmd += " --reload"
+    context.run("docker compose up -d")
+    context.run(exec_cmd)
+
+
+@task
+def lab2_destroy(context: Context, reload: bool = False) -> None:
+    """Destroy Lab2."""
+    context.run("docker compose down -v")
+
+
+@task
+def lab2_load(
+    context: Context,
+    url: str = "http://localhost:8001",
+    site_name: str = "site-1",
+    tags: bool = False,
+) -> None:
+    """Load devices into Lab2."""
+    with httpx.Client() as client:
+        response = client.get(f"{url}/api/sites/")
+        response.raise_for_status()
+        site_id = [s["name"] for s in response.json() if s["name"] == site_name]
+        if not site_id:
+            response = client.post(
+                f"{url}/api/sites/",
+                json={
+                    "name": site_name,
+                    "label": site_name,
+                    "address": "123 Wall Street",
+                },
+            )
+            response.raise_for_status()
+
+    default_tags = [
+        {"name": "tag-1", "color": "red"},
+        {"name": "tag-2", "color": "blue"},
+    ]
+    if tags:
+        with httpx.Client() as client:
+            response = client.get(f"{url}/api/tags/")
+            response.raise_for_status()
+            found_tags = response.json()
+            for tag in default_tags:
+                if tag not in found_tags:
+                    response = client.post(f"{url}/api/tags/", json=tag)
+                    response.raise_for_status()
+    for _ in range(0, 5):
+        device_tags = [default_tags[_ % 2]] if tags else []
+        response = create_lab2_devices(
+            url=url, site_name=site_name, wants_tags=tags, tags=device_tags
+        )
+        response.raise_for_status()
+
+
+# @task
+# def lab2_test(context: Context) -> None:
+#     """Run pytest against Lab2."""
+#     exec_cmd = "pytest tests/lab2"
+#     context.run(exec_cmd)

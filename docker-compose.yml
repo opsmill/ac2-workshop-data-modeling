@@ -1,0 +1,24 @@
+services:
+  database:
+    image: ${NEO4J_DOCKER_IMAGE:-neo4j:5.20.0-community}
+    restart: unless-stopped
+    environment:
+      NEO4J_AUTH: ${DB_USERNAME:-neo4j}/${DB_PASSWORD:-admin}
+      NEO4J_dbms_security_procedures_unrestricted: "apoc.*"
+      NEO4J_dbms_security_auth__minimum__password__length: 4
+    volumes:
+      - "database_data:/data"
+      - "database_logs:/logs"
+    healthcheck:
+      test: wget http://localhost:7474 || exit 1
+      interval: 2s
+      timeout: 10s
+      retries: 20
+      start_period: 3s
+    ports:
+      - 7474:7474
+      - 7687:7687
+
+volumes:
+  database_data:
+  database_logs:

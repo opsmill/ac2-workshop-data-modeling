@@ -1,18 +1,36 @@
 from contextlib import asynccontextmanager
+import time
 from fastapi import FastAPI
 from fastapi.responses import PlainTextResponse
+from neo4j.exceptions import ServiceUnavailable
 
-from workshop_b2.lab1.database import create_db_and_tables
-from workshop_b2.lab1.rest.router import router as rest_router
-from workshop_b2.lab1.graphql.router import init_app
+from workshop_b2.lab2.database import create_initial_constraints, get_db
+from workshop_b2.lab2.rest.router import router as rest_router
+from workshop_b2.lab2.graphql.router import init_app
 
 from graphql import print_schema
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    create_db_and_tables()
+    db = get_db()
+    max_retries = 10
+    retry_delay = 5
+    for attempt in range(max_retries):
+        try:
+            db.verify_connectivity()
+            print("Server successfully started")
+            break
+        except ServiceUnavailable:
+            print(f"Attempt {attempt + 1} failed, retrying in {retry_delay} seconds...")
+            time.sleep(retry_delay)
+            if attempt == max_retries - 1:
+                print("Max retries reached, shutting down.")
+                db.close()
+                raise
+    create_initial_constraints()
     yield
+    db.close()
 
 
 app = FastAPI(
