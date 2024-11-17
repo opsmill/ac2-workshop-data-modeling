@@ -14,7 +14,7 @@ const config: Config = {
   baseUrl: '/',
 
   organizationName: 'opsmill',
-  projectName: 'w2-workshop-data-modeling',
+  projectName: 'autocon2-workshop-data-modeling',
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
