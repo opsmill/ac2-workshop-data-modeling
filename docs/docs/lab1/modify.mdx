@@ -1,0 +1,32 @@
+---
+title: Update the existing schema
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import ReferenceLink from "../../src/components/Card";
+
+
+## Add / modify attributes
+
+:::info
+To modify the attribute we need to modify the Pydantic models in `workshop_b2/models.py`
+:::
+
+### Change the attributes of taking
+
+Find the model Tag which should look as presented below
+```python
+class Tag(BaseModel):
+    name: str
+    color: str
+```
+
+Replace the model Tag with the following model
+
+```python
+class Tag(BaseModel):
+    name: str = Field(pattern=r'^[a-z0-9]+$')
+    color: str = Field(default="#FFFFFF", description="Color of the tag")
+    description: str | None = None
+```

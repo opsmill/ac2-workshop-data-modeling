@@ -1,0 +1,29 @@
+---
+title: Explore JSON Schema and GraphQL
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import ReferenceLink from "../../src/components/Card";
+
+## Query the data via the REST API
+
+Since our 4 models are currently independant, we should technically look at 4 JSON Schemas but in the context of this lab, the application exposes a single JSON Schema file regrouping all 4 objects
+
+<ReferenceLink title="JSON Schema" url="http://localhost:8000/jsonschema" openInNewTab />
+
+The schema of the REST API defined using OpenAPI is leveraging JSON Schema to define the format of the payload returned by the different endpoint.
+While an OpenAPI file is not a JSON Schema it can be interesting to take a look
+
+<ReferenceLink title="Open API" url="http://localhost:8000/openapi.json" openInNewTab />
+
+
+## Explore the GraphQL Schema
+
+Usually the easier way to explore the schema of a GraphQL application is to use the GraphQL Sandbox.
+The sample application also exposes the GraphQL Schema via its own endpoint, in GraphQL native schema format.
+
+<ReferenceLink title="GraphQL Schema" url="http://localhost:8000/schema.graphql" openInNewTab />
+
+<ReferenceLink title="GraphQL Sandbox" url="http://localhost:8000/graphql" openInNewTab />
+

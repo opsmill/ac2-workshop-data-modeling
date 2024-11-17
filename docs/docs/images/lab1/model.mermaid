@@ -1,0 +1,25 @@
+erDiagram
+    SITE {
+        str name
+        str label
+        str description
+        str address
+    }
+    COUNTRY {
+        str name
+        str label
+        str description
+        str continent
+    }
+    DEVICE {
+        str name
+        str manufacturer
+        enum status
+        SITE site
+    }
+    TAG {
+        str name
+        str color
+    }
+
+    DEVICE }|--|| SITE : "IS PART OF"

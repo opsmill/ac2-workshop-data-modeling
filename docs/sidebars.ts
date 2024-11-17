@@ -3,8 +3,29 @@ import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
 const sidebars: SidebarsConfig = {
   docsSidebar: [
     'readme',
-    'lab1',
-    'lab2',
+    {
+      type: 'category',
+      label: 'Lab 1',
+      link: { type: 'doc', id: 'lab1/readme' },
+      items: [
+        'lab1/setup',
+        'lab1/start',
+        'lab1/load_data',
+        'lab1/explore',
+        'lab1/modify',
+        'lab1/summary',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Lab 2',
+      link: { type: 'doc', id: 'lab2/readme' },
+      items: [
+        'lab2/setup',
+        'lab2/explore',
+        'lab2/summary',
+      ],
+    },
   ]
 };
 
