@@ -12,7 +12,7 @@
         "python.linting.enabled": true
       },
       "vscode": {
-          "extensions": [
+        "extensions": [
           "qwtel.sqlite-viewer",
           "pomdtr.excalidraw-editor",
           "wholroyd.jinja",
