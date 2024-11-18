@@ -30,15 +30,15 @@ class Site(Location):
     address: str
 
 
-# class Tag(BaseModel):
-#     name: str
-#     color: str
-
-
 class Tag(BaseModel):
-    name: str = Field(pattern=r"^[a-z0-9]+$")
-    color: str = Field(default="#FFFFFF", description="Color of the tag")
-    description: str | None = None
+    name: str
+    color: str
+
+
+# class Tag(BaseModel):
+#     name: str = Field(pattern=r"^[a-z0-9]+$")
+#     color: str = Field(default="#FFFFFF", description="Color of the tag")
+#     description: str | None = None
 
 
 class Device(BaseModel):
