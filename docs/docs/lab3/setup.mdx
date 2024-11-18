@@ -1,3 +1,108 @@
 ---
-title: Setup
+title: Setup and Requirements
 ---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import ReferenceLink from "../../src/components/Card";
+
+## Requirements
+
+In order to complete this lab, it's required to have:
+
+- An instance of Infrahhub 1.0.x up and running
+- A Web browser with internet access
+- The cli tool `infrahubctl` to communicate with Infrahub
+
+## Access your instance of Infrahub
+
+A dedicated instance of Infrahub has been provisionned for each student registered for the workshop.
+The information to access your instance are available in OpsMill's cloud portal.
+
+Each student should have received an email with a `login`/`password` to connect to the portal.
+
+:::info
+If you have received this email please reach out to the staff for help
+:::
+
+<ReferenceLink title="OpsMill Cloud Portal" url="https://portal.opsmill.cloud/" openInNewTab />
+
+Once logged into the Portal, you can access the information about your instance by navigating to it
+- Organization `Org <your email address>`
+  - Environment `AutoCon Workshop`
+    - Instance `Workshop Infrahub`
+
+## Accounts to connect with infrahub
+
+The Infrahub instance has been provisionned with 2 accounts
+
+- login `student` | password `autocon2`
+- login `admin` | password `infrahub`
+
+It's recommended to use the `student` account for the rest of the workshop
+
+:::info
+The `student` account isn't authorized to make changes to the default branch, all changes must be done in a branch and they can be integrated into the main branch via a Proposed Change
+:::
+
+
+## Install and Setup `infrahubctl`
+
+`infrahubctl` is a cli tool designed to help interact with a remote instance of infrahub, it's meant to run on any server or laptop.
+
+It's typically used to:
+- Load new schemas
+- Manage branches (create, delete)
+- Help with local development and testing of Artifact, Transform, Generator and Check
+
+### Validating that `infrahubctl` is correctly installed
+
+`infrahubctl` is already installed as part of the main python environment provided for the workshop so it should be already installed.
+
+Run the following command to validate that it's correctly installed:
+
+```shell
+infrahubctl --help
+```
+
+### Install `infrahubctl`
+
+:::info
+If `infrahubctl` is already installed on your system you can go directly to the next section
+:::
+
+<Tabs>
+<TabItem value="Pip" default>
+
+```shell
+pip install 'infrahub-sdk[ctl]'
+```
+
+</TabItem>
+<TabItem value="Poetry">
+
+```shell
+poetry add infrahub-sdk --extra ctl
+```
+
+</TabItem>
+</Tabs>
+
+### Setup `infrahubctl`
+
+`infrahubctl` needs to be configured with the address of the infrahub server and an API token with the right permissions
+
+The easier way to configure `infrahubctl` is to define some environment variables.
+
+```shell
+export INFRAHUB_ADDRESS=<url of the server available in the portal>
+export INFRAHUB_USERNAME=admin
+export INFRAHUB_PASSWORD=infrahub
+```
+
+:::info
+infrahubctl (and the Python SDK) also support an API Token based authentication in addition to username/password
+:::
+
+
+

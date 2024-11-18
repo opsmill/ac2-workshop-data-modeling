@@ -2,12 +2,66 @@
 title: Setup and Requirements
 ---
 
+import ReferenceLink from "../../src/components/Card";
+
 ## Requirements
 
 In order to start the application provided for this lab, it's recommended to have:
 
 - Python 3.11 or 3.12
 - invoke
+
+## Setup
+
+The lab can be started in different ways
+- Locally on your laptop using `poetry`
+- On Github Codespace
+
+:::info
+it's also possible to start the lab locally with devcontainer but this method is not covered in this documentation
+:::
+
+### Start on Github Codespace
+
+TODO
+
+### Install locally with poetry
+
+#### install poetry
+
+Poetry is a popular package manager for Python, it can be installed with the following command
+```shell
+pipx install poetry
+```
+
+Check out the official documentation for poetry for more information
+<ReferenceLink title="Poetry documentation" url="https://python-poetry.org/docs/#installation" openInNewTab />
+
+#### Clone the git repository
+
+```shell
+git clone https://github.com/opsmill/ac2-workshop-data-modeling.git
+cd ac2-workshop-data-modeling
+```
+
+#### Install the python packages with poetry
+
+```shell
+poetry install
+```
+
+#### Enter the python environment created by poetry
+
+By default, poetry install all the packages in a dedicated python environment so in order for the lab to work you need to enter the right environment using the following command
+
+```shell
+poetry shell
+```
+
+:::info
+As an alternative, it's possible to execute commands inside the python environment using `poetry run` in front of all commands.
+:::
+
 
 ## Lab Commands
 

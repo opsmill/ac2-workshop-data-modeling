@@ -1,0 +1,76 @@
+---
+title: Initial Schema
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import ReferenceLink from "../../src/components/Card";
+
+
+To start the lab, we'll load an initial schema into Infrahub and later on we'll explore how we extend it to explore some advanced features
+
+## Explore the initial schema
+
+The provided schema is meant to be a good starting point
+
+it includes a handful of node types
+- City
+- Device
+  - InterfaceL3
+- IP address
+- Prefix
+
+Most of these nodes are leveraging some generics to make it easier to extend the schema. We'll explore that in a moment
+
+
+## Create a branch and load the schema into the branch
+
+When working on a new schema it's often required to try different solutions and to start from scratch in the process.
+When dealing with an application managing data, it's usually not possible to try a change in isolation and start from scratch if needed
+
+In Infrahub, it's possible to use a branch as an isolated environment to try new things and we can easily delete the branch if the changes aren't ready to be integrated into main.
+
+Since we are using `infrahubctl` to load the schema, it's logical to also use it to manage branches
+
+### Manage branches using `infrahubctl`
+
+```shell
+infrahubctl branch list
+infrahubctl branch create <branch_name>
+infrahubctl branch delete <branch_name>
+```
+
+:::info
+The account student doesn't have the permissions to make changes to the default branch (main) so the creation a branch is mandatory for this account.
+:::
+
+
+## Create a new branch and load the schema
+
+Create a branch using `infrahubctl`
+```shell
+infrahubctl branch create schema01
+```
+
+Load the initial schema
+
+```shell
+infrahubctl schema load workshop_b2/lab3/schemas --branch schema01
+```
+
+## Load some data to go with the schema
+
+To go along with the schemas some data have been prepared in the directory `workshop_b2/lab3`
+
+We'll use the command `infrahubctl object load` to load the data into infrahub directly
+
+```shell
+infrahubctl object load workshop_b2/lab3/data/site.yml --branch schema01
+infrahubctl object load workshop_b2/lab3/data/device.yml --branch schema01
+infrahubctl object load workshop_b2/lab3/data/interface.yml --branch schema01
+```
+> Please note that the other of these commands is important
+
+:::info
+The command `infrahubctl object load` is still under active developement and that's why it's hidden by default.
+:::

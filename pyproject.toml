@@ -19,6 +19,7 @@ uvicorn = "^0.32.0"
 strawberry-graphql = "^0.247.0"
 invoke = "^2.2.0"
 neo4j = "^5.26.0"
+infrahub-sdk = {version = "^1.0.1", extras = ["all"]}
 
 
 [tool.poetry.group.dev.dependencies]
