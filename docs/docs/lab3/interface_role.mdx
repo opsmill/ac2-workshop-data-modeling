@@ -1,0 +1,75 @@
+---
+title: Add Role to Interface
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import ReferenceLink from "../../src/components/Card";
+
+The initial schema is capturing some technical information about device, interfaces and IP addresses 
+but to distinguish between a Loopback interface and a physical interface we need to rely on the name of the interface.
+
+## Add a Role to the interface model
+
+In the file `workshop_b2/lab3/schemas/dcim.yml` uncomment the section highlighted below that is be currently commented
+
+```yaml  {25-31}
+  - name: InterfaceL3
+    namespace: Dcim
+    description: Network Layer 3 Interface
+    label: Interface L3
+    icon: mdi:ethernet
+    menu_placement: DcimInterface
+    display_labels:
+      - name__value
+    order_by:
+      - name__value
+    inherit_from:
+      - DcimInterface
+      - DcimEndpoint
+    attributes:
+      - name: status
+        kind: Dropdown
+        optional: true
+        choices:
+          - name: active
+            description: Fully operational and currently in service.
+            color: "#7fbf7f"
+          - name: maintenance
+            description: Undergoing routine maintenance or repairs.
+            color: "#ffd27f"
+      - name: role
+        kind: Dropdown
+        optional: true
+        choices:
+          - name: loopback
+          - name: uplink
+          - name: peer
+    relationships:
+      - name: ip_addresses
+        peer: IpamIPAddress
+        optional: true
+        cardinality: many
+```
+
+## Load the updated schema
+
+```shell
+infrahubctl schema load workshop_b2/lab3/schemas --branch schema01
+```
+
+After reloading the frontend, in the Interface L3 view, you should now see a column Role
+
+## Load some additional data
+
+In the file `workshop_b2/lab3/data/interface_l3.yml` uncomment the lines that are defining the role of each interface and reload the data with the following command
+
+```shell
+infrahubctl object load workshop_b2/lab3/data/interface_l3.yml --branch schema01
+```
+
+:::info
+This command is idempotent because the schema define a Humain Friendly ID for each interface based on the name of the related device and the name of the interface itself
+:::
+
+
