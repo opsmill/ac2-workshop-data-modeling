@@ -45,7 +45,7 @@ class Device(BaseModel):
     name: str
     manufacturer: str | None = None
     status: DeviceStatus = DeviceStatus.ACTIVE
-    tags: list[Tag] = Field(default_factory=list)
+    # tags: list[Tag] = Field(default_factory=list)
 
 
 class AllModels(BaseModel):

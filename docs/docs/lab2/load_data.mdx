@@ -1,0 +1,29 @@
+---
+title: Load data
+---
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import ReferenceLink from "../../src/components/Card";
+
+## Load some data into the application
+
+Before taking a closer look at the different schemas, we're gonna load some data into the application to make it a bit more interesting.
+
+:::info
+The application must be running on port 8001 while running the next command so it's important to keep the application running on one terminal and to start a new one to execute the command below
+:::
+
+## 1. Load some data into the application
+
+Open a new terminal window, navigate to the workshop folder and load in the data.
+
+```shell
+invoke lab2-load
+```
+```shell
+Creating device: {'name': 'device-9b9ba14a', 'manufacturer': None, 'status': <DeviceStatus.ACTIVE: 'active'>, 'site': {'name': 'site-1', 'label': 'site-1', 'description': None, 'address': '123 Wall Street'}}
+Creating device: {'name': 'device-0dc44bef', 'manufacturer': None, 'status': <DeviceStatus.ACTIVE: 'active'>, 'site': {'name': 'site-1', 'label': 'site-1', 'description': None, 'address': '123 Wall Street'}}
+Creating device: {'name': 'device-eb98ce97', 'manufacturer': None, 'status': <DeviceStatus.ACTIVE: 'active'>, 'site': {'name': 'site-1', 'label': 'site-1', 'description': None, 'address': '123 Wall Street'}}
+Creating device: {'name': 'device-20262e7d', 'manufacturer': None, 'status': <DeviceStatus.ACTIVE: 'active'>, 'site': {'name': 'site-1', 'label': 'site-1', 'description': None, 'address': '123 Wall Street'}}
+Creating device: {'name': 'device-e1f047aa', 'manufacturer': None, 'status': <DeviceStatus.ACTIVE: 'active'>, 'site': {'name': 'site-1', 'label': 'site-1', 'description': None, 'address': '123 Wall Street'}}
+```

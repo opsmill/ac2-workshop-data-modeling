@@ -1,0 +1,37 @@
+---
+title: Start the application
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import ReferenceLink from "../../src/components/Card";
+
+## 1. Starting and exploring the API
+
+The first step is to start the application
+
+<Tabs>
+<TabItem value="Invoke" default>
+
+```shell
+invoke lab2-start --reload
+```
+
+</TabItem>
+<TabItem value="Python">
+
+```shell
+fastapi run workshop_b2/lab2/main.py --reload
+```
+
+</TabItem>
+</Tabs>
+
+
+Once you see **Application startup complete**, the application is running on port 8001 and you can access the REST API and the GraphQL Sandbox at the following addresses
+
+<ReferenceLink title="REST API Documentation" url="http://localhost:8001/docs" openInNewTab />
+
+<ReferenceLink title="GraphQL Sandbox" url="http://localhost:8001/graphql" openInNewTab />
+
+For now the application is empty, we'll add data in the next step

@@ -22,7 +22,11 @@ const sidebars: SidebarsConfig = {
       link: { type: 'doc', id: 'lab2/readme' },
       items: [
         'lab2/setup',
-        'lab2/explore',
+        'lab2/start',
+        'lab2/load_data',
+        'lab2/explore_schema',
+        'lab2/explore_data',
+        'lab2/explore_m2m_relationships'
         // 'lab2/summary',
       ],
     },
