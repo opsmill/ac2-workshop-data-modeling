@@ -29,15 +29,15 @@ class TagMixin:
         """
         node_label = self.__class__.__name__.replace("Model", "").title()
         node_short = node_label[0]
-        tag = tags[0]
-        query = (
-            f"MATCH ({node_short}:{node_label}" + " {name: $name})"
-            "OPTIONAL MATCH (t:Tag {name: " + f'"{tag.name}"' + "})"
-            f"MERGE ({node_short})-[:TAGGED]->(t)"
-        )
-        db.execute_query(
-            query, {"name": self.name, "tags": [t.model_dump() for t in tags]}
-        )
+        for tag in tags:
+            query = (
+                f"MATCH ({node_short}:{node_label}" + " {name: $name})"
+                "OPTIONAL MATCH (t:Tag {name: " + f'"{tag.name}"' + "})"
+                f"MERGE ({node_short})-[:TAGGED]->(t)"
+            )
+            db.execute_query(
+                query, {"name": self.name, "tags": [t.model_dump() for t in tags]}
+            )
 
 
 class CountryModel(Country):
@@ -194,8 +194,6 @@ class DeviceModel(Device, TagMixin):
             db (Driver): Neo4j driver instance.
         """
         query_params = self.model_dump()
-        if not query_params["tags"]:
-            query_params.pop("tags")
         if self.site:
             found_site = self._find_site(db)
             if found_site:
@@ -213,7 +211,9 @@ class DeviceModel(Device, TagMixin):
                 status_code=409, detail=f"Device ({self.name})already exists"
             )
 
-        self.add_tags(db, self.tags)
+        if self.tags:
+            self.add_tags(db, self.tags)
+
         return self.get(db)
 
     def get(self, db: Driver):

@@ -34,17 +34,18 @@ class Site(Location):
 #     name: str
 #     color: str
 
+
 class Tag(BaseModel):
-    name: str = Field(pattern=r'^[a-z0-9]+$')
+    name: str = Field(pattern=r"^[a-z0-9]+$")
     color: str = Field(default="#FFFFFF", description="Color of the tag")
     description: str | None = None
+
 
 class Device(BaseModel):
     name: str
     manufacturer: str | None = None
     status: DeviceStatus = DeviceStatus.ACTIVE
-    # Step 1: Add tags to the Device Model
-    # tags: list[Tag] = Field(default_factory=list)
+    tags: list[Tag] = Field(default_factory=list)
 
 
 class AllModels(BaseModel):

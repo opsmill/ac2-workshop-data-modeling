@@ -15,14 +15,25 @@ class Query:
     def devices(self, info: strawberry.Info) -> list[DeviceType]:
         session = info.context["session"]
         devices = session.execute_query(
-            "MATCH (d:Device)-[:LOCATED_IN]->(s:Site) RETURN d, s"
+            (
+                "MATCH (d:Device)-[:LOCATED_IN]->(s:Site)"
+                "OPTIONAL MATCH (d)-[:TAGGED]->(t:Tag)"
+                "RETURN d, s, t"
+            )
         ).records
-        return [DeviceType(**d["d"], **{"site": SiteType(**d["s"])}) for d in devices]
+        return [
+            DeviceType(
+                **d["d"], **{"site": SiteType(**d["s"]), "tags": [TagType(**t) for t in d["t"]])}
+            )
+            for d in devices
+        ]
 
     @strawberry.field()
     def tags(self, info: strawberry.Info) -> list[TagType]:
         session = info.context["session"]
-        tags = session.execute_query("MATCH (t:Tag) RETURN t").records
+        tags = session.execute_query(
+            ("MATCH (t:Tag) OPTIONAL MATCH (t)-[:TAGGED]->(d:Device) RETURN t")
+        ).records
         return [TagType(**t["t"]) for t in tags]
 
     @strawberry.field()

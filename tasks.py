@@ -122,7 +122,7 @@ def lab1_test(context: Context) -> None:
 def create_lab2_devices(
     url: str,
     site_name: str,
-    wants_tags: bool,
+    wants_tags: bool = False,
     tags: list["Tag"] | None = None,
 ) -> httpx.Response:
     from workshop_b2.lab2.database import models as Lab2Models
@@ -160,6 +160,8 @@ def lab2_load(
     site_name: str = "site-1",
     tags: bool = False,
 ) -> None:
+    from workshop_b2.lab2.database import models as Lab2Models
+
     """Load devices into Lab2."""
     with httpx.Client() as client:
         response = client.get(f"{url}/api/sites/")
@@ -177,20 +179,30 @@ def lab2_load(
             response.raise_for_status()
 
     default_tags = [
-        {"name": "tag-1", "color": "red"},
-        {"name": "tag-2", "color": "blue"},
+        {"name": "tag1", "color": "red"},
+        {"name": "tag2", "color": "blue"},
+        {"name": "tag3", "color": "yellow"},
+        {"name": "tag4", "color": "orange"},
+        {"name": "tag5", "color": "green"},
+        {"name": "tag6", "color": "green"},
     ]
-    if tags:
+    is_tagged = "tags" in Lab2Models.Device.model_fields
+    if tags and is_tagged:
         with httpx.Client() as client:
             response = client.get(f"{url}/api/tags/")
             response.raise_for_status()
-            found_tags = response.json()
+            found_tags = [t["name"] for t in response.json()]
             for tag in default_tags:
-                if tag not in found_tags:
+                if tag["name"] not in found_tags:
                     response = client.post(f"{url}/api/tags/", json=tag)
                     response.raise_for_status()
-    for _ in range(0, 5):
-        device_tags = [default_tags[_ % 2]] if tags else []
+    else:
+        print("No tags to load due to tags not being implemented in the model.")
+    for _ in range(0, 4):
+        # Get initial even or odd tag and then skip by 2
+        odds_or_even = _ % 2
+        assigned_tags = default_tags[odds_or_even::2]
+        device_tags = assigned_tags if tags and is_tagged else []
         response = create_lab2_devices(
             url=url, site_name=site_name, wants_tags=tags, tags=device_tags
         )

@@ -22,3 +22,4 @@ class TagType: ...
 @strawberry.experimental.pydantic.type(model=Device, all_fields=True)
 class DeviceType:
     site: SiteType
+    tags: list[TagType]
