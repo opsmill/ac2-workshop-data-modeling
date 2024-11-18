@@ -54,8 +54,7 @@ generics:
     order_by:
       - device__name__value
       - name__value
-    uniqueness_constraints:
-      - [device, name__value]
+    human_friendly_id: [device__name__value, name__value]
     attributes:
       - name: name
         kind: Text
@@ -146,9 +145,15 @@ nodes:
           - name: maintenance
             description: Undergoing routine maintenance or repairs.
             color: "#ffd27f"
+      # - name: role
+      #   kind: Dropdown
+      #   optional: true
+      #   choices:
+      #     - name: loopback
+      #     - name: uplink
+      #     - name: peer
     relationships:
       - name: ip_addresses
         peer: IpamIPAddress
         optional: true
         cardinality: many
-
