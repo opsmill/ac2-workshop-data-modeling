@@ -1,0 +1,120 @@
+---
+title: Add interface L2
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import ReferenceLink from "../../src/components/Card";
+
+The current schema support L3 Interfaces with potential IP addresses but it doesn't currently support other type of interfaces like L2.
+
+Since we already have a Generic `DcimInterface`, we can create a new Interface L2 node that will inherit from `DcimInterface`
+
+## Create a new InterfaceL2 node
+
+Create a new file `workshop_b2/lab3/schemas/interface_l2.yml` and with the content displayed below
+
+```yaml
+---
+version: "1.0"
+nodes:
+  - name: InterfaceL2
+    namespace: Dcim
+    label: Interface L2
+    icon: mdi:ethernet
+    menu_placement: DcimInterface
+    display_labels:
+      - name__value
+    inherit_from:
+      - DcimInterface
+      - DcimEndpoint
+    attributes:
+      - name: status
+        kind: Dropdown
+        optional: true
+        choices:
+          - name: active
+            label: Active
+            description: Fully operational and currently in service.
+            color: "#7fbf7f"
+          - name: provisioning
+            label: Provisioning
+            description: In the process of being set up and configured.
+            color: "#ffff7f"
+          - name: maintenance
+            label: Maintenance
+            description: Undergoing routine maintenance or repairs.
+            color: "#ffd27f"
+      - name: l2_mode
+        label: Layer2 Mode
+        kind: Text
+        enum:
+          - Access
+          - Trunk
+          - Tunnel
+```
+
+## Load the updated schema
+
+```shell
+infrahubctl schema load workshop_b2/lab3/schemas --branch schema01
+```
+
+## Load some additional data
+
+Create new L2 interfaces with the following commands
+
+```shell
+infrahubctl object load workshop_b2/lab3/data/interface_l2.yml --branch schema01
+```
+
+## Explore the new interfaces from the frontend
+
+In the frontend, navigate to the `interfaces` tab on the device `den1-router1`.
+
+As shown in the screenshot below we can see that both InterfaceL3 and InterfaceL2 are displayed together.
+
+This is possible because Interface L2 and interface L3 are both inheriting from the same `DcimInterface`
+![interfaces](../images/lab3/interfaces.png)
+
+## Explore the new interfaces in GraphQL
+
+In the GraphQL Sandbox, execute the following command
+
+```graphql
+query {
+  DcimDevice(name__value: "den1-router1" ) {
+     edges {
+      node{
+        interfaces {
+          edges {
+            node {
+              name {
+                value
+              }
+              ...on DcimInterfaceL2 {
+                l2_mode {
+                  value
+                }
+              }
+              ...on DcimInterfaceL3 {
+                ip_addresses {
+                  edges {
+                    node {
+                      address {
+                        value
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+the command above is using from Fragment in GraphQL to retrive all interfaces in a single list but also access attributes specific to InterfaceL2 or InterfaceL3

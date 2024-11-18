@@ -32,7 +32,9 @@ const sidebars: SidebarsConfig = {
       link: { type: 'doc', id: 'lab3/readme' },
       items: [
         'lab3/setup',
-        'lab3/load_schema',
+        'lab3/initialschema',
+        'lab3/interfacerole',
+        'lab3/interfacel2',
         // 'lab2/summary',
       ],
     },

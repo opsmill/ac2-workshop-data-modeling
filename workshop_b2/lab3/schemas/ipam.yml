@@ -10,14 +10,10 @@ nodes:
     label: IP Address
     icon: mdi:ip
     include_in_menu: false
-    order_by:
-      - address__value
     display_labels:
       - address__value
     inherit_from:
       - BuiltinIPAddress
-    uniqueness_constraints:
-      - [ip_namespace, address__value]
     human_friendly_id:
       - address__value
       - ip_namespace__name__value
