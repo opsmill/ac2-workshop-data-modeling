@@ -13,7 +13,7 @@ const sidebars: SidebarsConfig = {
         'lab1/load_data',
         'lab1/explore',
         'lab1/modify',
-        'lab1/summary',
+        // 'lab1/summary',
       ],
     },
     {
@@ -23,7 +23,17 @@ const sidebars: SidebarsConfig = {
       items: [
         'lab2/setup',
         'lab2/explore',
-        'lab2/summary',
+        // 'lab2/summary',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Lab 3',
+      link: { type: 'doc', id: 'lab3/readme' },
+      items: [
+        'lab3/setup',
+        'lab3/load_schema',
+        // 'lab2/summary',
       ],
     },
   ]

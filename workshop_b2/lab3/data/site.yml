@@ -1,0 +1,10 @@
+---
+apiVersion: infrahub.app/v1
+kind: Object
+spec:
+  kind: LocationCity
+  data:
+    - name: denver
+      shortname: den1
+    - name: paris
+      shortname: par1
