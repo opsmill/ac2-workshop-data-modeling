@@ -8,7 +8,7 @@ import ReferenceLink from "../../src/components/Card";
 
 The current schema support L3 Interfaces with potential IP addresses but it doesn't currently support other type of interfaces like L2.
 
-Since we already have a Generic `DcimInterface`, we can create a new Interface L2 node that will inherit from `DcimInterface`
+Since we already have a Generic `DcimInterface`, we can create a new Interface L2 node that will inherit from `DcimInterface`.
 
 ## Create a new InterfaceL2 node
 
@@ -54,6 +54,10 @@ nodes:
           - Tunnel
 ```
 
+:::info
+There's a file in `workshop_b2/lab3/schemas/interface_l2.yml.bak` if you want to cheat on this step. Simply rename it to `interface_l2.yml`
+:::
+
 ## Load the updated schema
 
 ```shell
@@ -68,7 +72,7 @@ Create new L2 interfaces with the following commands
 infrahubctl object load workshop_b2/lab3/data/interface_l2.yml --branch schema01
 ```
 
-## Explore the new interfaces from the frontend
+## Explore the new L2 interfaces from the frontend
 
 In the frontend, navigate to the `interfaces` tab on the device `den1-router1`.
 
@@ -117,4 +121,4 @@ query {
 }
 ```
 
-the command above is using from Fragment in GraphQL to retrive all interfaces in a single list but also access attributes specific to InterfaceL2 or InterfaceL3
+The command above is using Fragments in GraphQL to retrieve all interfaces in a single list but also access attributes specific to InterfaceL2 or InterfaceL3.
