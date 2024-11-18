@@ -1,0 +1,37 @@
+---
+version: "1.0"
+nodes:
+  - name: InterfaceL2
+    namespace: Dcim
+    label: Interface L2
+    icon: mdi:ethernet
+    menu_placement: DcimInterface
+    display_labels:
+      - name__value
+    inherit_from:
+      - DcimInterface
+      - DcimEndpoint
+    attributes:
+      - name: status
+        kind: Dropdown
+        optional: true
+        choices:
+          - name: active
+            label: Active
+            description: Fully operational and currently in service.
+            color: "#7fbf7f"
+          - name: provisioning
+            label: Provisioning
+            description: In the process of being set up and configured.
+            color: "#ffff7f"
+          - name: maintenance
+            label: Maintenance
+            description: Undergoing routine maintenance or repairs.
+            color: "#ffd27f"
+      - name: l2_mode
+        label: Layer2 Mode
+        kind: Text
+        enum:
+          - Access
+          - Trunk
+          - Tunnel

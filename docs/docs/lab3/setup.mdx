@@ -10,31 +10,35 @@ import ReferenceLink from "../../src/components/Card";
 
 In order to complete this lab, it's required to have:
 
-- An instance of Infrahhub 1.0.x up and running
+- An instance of Infrahub 1.0.x up and running
+  - Details have been emailed to Autocon2 workshop attendees
 - A Web browser with internet access
 - The cli tool `infrahubctl` to communicate with Infrahub
 
 ## Access your instance of Infrahub
 
-A dedicated instance of Infrahub has been provisionned for each student registered for the workshop.
+A dedicated instance of Infrahub has been provisioned for each student registered for the workshop.
 The information to access your instance are available in OpsMill's cloud portal.
 
 Each student should have received an email with a `login`/`password` to connect to the portal.
 
 :::info
-If you have received this email please reach out to the staff for help
+If you haven't received this email please reach out to the staff for help
 :::
 
+<!-- markdownlint-disable -->
 <ReferenceLink title="OpsMill Cloud Portal" url="https://portal.opsmill.cloud/" openInNewTab />
+<!-- markdownlint-restore -->
 
-Once logged into the Portal, you can access the information about your instance by navigating to it
+Once logged into the Portal, you can access the information about your instance by navigating to it:
+
 - Organization `Org <your email address>`
   - Environment `AutoCon Workshop`
     - Instance `Workshop Infrahub`
 
 ## Accounts to connect with infrahub
 
-The Infrahub instance has been provisionned with 2 accounts
+The Infrahub instance has been provisioned with 2 accounts
 
 - login `student` | password `autocon2`
 - login `admin` | password `infrahub`
@@ -45,12 +49,12 @@ It's recommended to use the `student` account for the rest of the workshop
 The `student` account isn't authorized to make changes to the default branch, all changes must be done in a branch and they can be integrated into the main branch via a Proposed Change
 :::
 
-
 ## Install and Setup `infrahubctl`
 
 `infrahubctl` is a cli tool designed to help interact with a remote instance of infrahub, it's meant to run on any server or laptop.
 
 It's typically used to:
+
 - Load new schemas
 - Manage branches (create, delete)
 - Help with local development and testing of Artifact, Transform, Generator and Check
@@ -71,15 +75,19 @@ infrahubctl --help
 If `infrahubctl` is already installed on your system you can go directly to the next section
 :::
 
+<!-- markdownlint-disable -->
 <Tabs>
 <TabItem value="Pip" default>
+<!-- markdownlint-restore -->
 
 ```shell
 pip install 'infrahub-sdk[ctl]'
 ```
 
+<!-- markdownlint-disable -->
 </TabItem>
 <TabItem value="Poetry">
+<!-- markdownlint-restore -->
 
 ```shell
 poetry add infrahub-sdk --extra ctl
@@ -101,8 +109,5 @@ export INFRAHUB_PASSWORD=infrahub
 ```
 
 :::info
-infrahubctl (and the Python SDK) also support an API Token based authentication in addition to username/password
+`infrahubctl` (and the Python SDK) also support an API Token based authentication in addition to username/password, but this method won't be covered in this workshop.
 :::
-
-
-

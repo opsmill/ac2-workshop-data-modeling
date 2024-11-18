@@ -1,9 +1,0 @@
----
-apiVersion: infrahub.app/v1
-kind: Object
-spec:
-  kind: DcimInterfaceL3
-  data:
-    - device: [den1-router1]
-      name: Ethernet1
-      status: active
