@@ -9,7 +9,11 @@ import ReferenceLink from "../../src/components/Card";
 
 The first step will be to add a ``TagsMixin`` into **workshop_b2/lab2/database/models.py**.
 
-At the top of the there is a ``def _build_filter_query`` method, add the following code below that function.
+:::info
+This has already been completed, but we'll be going through the code.
+:::
+
+If you search for ``TagMixin``, you will find the following code:
 
 ```python
 class TagMixin:
@@ -36,13 +40,13 @@ class TagMixin:
 
 ```
 
-Add the ``TagsMixin`` class to the ``DeviceModel``.
+The ``TagsMixin`` class gets added to the ``DeviceModel``.
 
 ```python
 class DeviceModel(Device, TagMixin):
 ```
 
-Next, update the ``create`` method on the ``DeviceModel`` to add the tags if they exist.
+Next, the ``create`` method on the ``DeviceModel`` adds code to add tags if they're passed into the application.
 
 ```python
 if self.tags:
@@ -52,7 +56,11 @@ if self.tags:
 return self.get(db)
 ```
 
-Now navigate to **workshop_b2/models.py** and add the following line to the **Device** class.
+Navigate to **workshop_b2/models.py** and uncomment the ``tags`` attribute in the **Device** class.
+
+:::warning
+This line will break Lab 1 and must be re-commented if you want to start Lab 1.
+:::
 
 ```python
 class Device(BaseModel):
