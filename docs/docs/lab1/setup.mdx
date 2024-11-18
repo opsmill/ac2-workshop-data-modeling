@@ -9,7 +9,7 @@ import ReferenceLink from "../../src/components/Card";
 In order to start the application provided for this lab, it's recommended to have:
 
 - Python 3.11 or 3.12
-- invoke
+- `invoke`
 
 ## Setup
 
@@ -21,15 +21,22 @@ The lab can be started in different ways
 it's also possible to start the lab locally with devcontainer but this method is not covered in this documentation
 :::
 
-### Start on Github Codespace
+### Start on Github Codespaces
+
+Click on the below link to launch a GitHub Codespace:
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/opsmill/ac2-workshop-data-modeling?devcontainer_path=.devcontainer%2Fdevcontainer.json&ref=main)
+
+Click `Create codespace` on the screen that loads:
+
+![codespace_start](../images/lab1/codespaces_start.png)
 
 ### Install locally with poetry
 
 #### install poetry
 
-Poetry is a popular package manager for Python, it can be installed with the following command
+Poetry is a popular package manager for Python, it can be installed with the following command:
+
 ```shell
 pipx install poetry
 ```
@@ -52,7 +59,7 @@ poetry install
 
 #### Enter the python environment created by poetry
 
-By default, poetry install all the packages in a dedicated python environment so in order for the lab to work you need to enter the right environment using the following command
+By default, poetry install all the packages in a dedicated python environment so in order for the lab to work you need to enter the right environment using the following command:
 
 ```shell
 poetry shell
@@ -65,7 +72,9 @@ As an alternative, it's possible to execute commands inside the python environme
 
 ## Lab Commands
 
-To simplify the process, there is a CLI provided to be able to easily manage the lab using Invoke. List the available Invoke tasks.
+To simplify the process, there is a CLI provided to be able to easily manage the lab using Invoke.
+
+You can list the available `invoke` tasks as shown below:
 
 ```shell
 invoke -l
@@ -80,6 +89,6 @@ Available tasks:
 ```
 
 :::info
-Omitted non-lab1 related Invoke tasks.
+Omitted non-lab1 related `invoke` tasks.
 :::
 
