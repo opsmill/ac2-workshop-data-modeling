@@ -60,14 +60,16 @@ infrahubctl schema load workshop_b2/lab3/schemas --branch schema01
 
 ## Load some data to go with the schema
 
-To go along with the schemas some data have been prepared in the directory `workshop_b2/lab3`
+To go along with the schemas some data have been prepared in the directory `workshop_b2/lab3/data`
 
 We'll use the command `infrahubctl object load` to load the data into infrahub directly
 
 ```shell
 infrahubctl object load workshop_b2/lab3/data/site.yml --branch schema01
 infrahubctl object load workshop_b2/lab3/data/device.yml --branch schema01
-infrahubctl object load workshop_b2/lab3/data/interface.yml --branch schema01
+infrahubctl object load workshop_b2/lab3/data/interface_l3.yml --branch schema01
+infrahubctl object load workshop_b2/lab3/data/prefix.yml --branch schema01
+infrahubctl object load workshop_b2/lab3/data/ipaddress.yml --branch schema01
 ```
 > Please note that the other of these commands is important
 
