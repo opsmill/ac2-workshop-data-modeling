@@ -1,0 +1,150 @@
+---
+title: Explore the data
+---
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import ReferenceLink from "../../src/components/Card";
+
+## Exploring the data in SQLite
+
+Open the database in either [DB Browser for SQLite](https://sqlitebrowser.org/dl/) or [SQLite viewer plugin for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=qwtel.sqlite-viewer&ssr=false#overview)
+
+<Tabs>
+<TabItem value="DBBrowser for SQLite" default>
+
+Launch **DB Browser for SQLite**
+
+Open the **database.db** file in the project directory.
+
+Click on the **Browse Data** tab and select the **devicemodel** table.
+
+![sqlite-schema](../images/lab2/sqlite-data-dbbrowser.png)
+
+</TabItem>
+<TabItem value="VSCode - SQLite Browser">
+
+Double click the **database.db** file within VSCode.
+
+Expand the **devicemodel** to view the data.
+
+![sqlite-vscode](../images/lab2/sqllite-data-vscode.png)
+
+</TabItem>
+</Tabs>
+
+Each device is represented as a row in the **devicemodel** table.
+
+The **site_id** column of each row references the ID of a row in the **sitemodel** table. This models a one to many relationship otherwise known as a **ForeignKey** relationship.
+
+## Exploring the data in the graph database (Neo4j)
+
+Navigate to the [Neo4j Browser](http://localhost:7474). 
+
+Click on the **database** icon in the top left.
+
+![neo4j-menu](../images/lab2/02-neo4j-menu.png)
+
+Click on the **Device** Node Label.
+
+![neo4j-device-base](../images/lab2/06-neo4j-base-device-1.png)
+
+There should be 5 device nodes displayed.
+
+![neo4j-device-base](../images/lab2/07-neo4j-device-nodes.png)
+
+Click one of the device nodes to see the properties of the node.
+
+![neo4j-device-base](../images/lab2/neo4j-device-properties.png)
+
+We can see that attributes of an instance of a **devicemodel** are stored as the properties of the node.
+
+Click on the device node again and select the **relationships** icon.
+
+![neo4j-device-base](../images/lab2/08-neo4j-device-relationships-1.png)
+
+The node has a relationship to **site-1** with a label of **LOCATED_IN** that represents the type of the relationship. This relationship mimics a [Foreign Key](https://www.reddit.com/r/SQL/comments/qras0z/please_explain_foreign_keys_to_me_like_i_am_six/) relationship.
+
+![neo4j-device-base](../images/lab2/09-neo4j-device-relationships-2.png)
+
+Currently, tags are a standalone model and do not have relationships with any other models. It may prove useful to allow multiple tags to be added to multiple devices.
+
+The next steps will implement a [Many-to-Many](https://en.wikipedia.org/wiki/Many-to-many_(data_model)) relationship between tags and devices within both types of databases.
+
+:::success
+Time to get our hands on some code!
+:::
+
+## (Neo4j) Adding many-to-many relationship between devices and tags
+
+The first step will be to add a ``TagsMixin`` into **workshop_b2/lab2/database/models.py**.
+
+At the top of the there is a ``def _build_filter_query`` method, add the following code below that function.
+
+```python
+class TagMixin:
+    tags: list[Tag] = Field(default_factory=list)
+
+    def add_tags(self, db: Driver, tags: list[Tag]):
+        """Add tags to a node.
+
+        Args:
+            db (Driver): Neo4j driver instance.
+            tags (list[Tag]): List of tags to add.
+        """
+        node_label = self.__class__.__name__.replace("Model", "").title()
+        node_short = node_label[0]
+        for tag in tags:
+            query = (
+                f"MATCH ({node_short}:{node_label}" + " {name: $name})"
+                "OPTIONAL MATCH (t:Tag {name: " + f'"{tag.name}"' + "})"
+                f"MERGE ({node_short})-[:TAGGED]->(t)"
+            )
+            db.execute_query(
+                query, {"name": self.name, "tags": [t.model_dump() for t in tags]}
+            )
+
+```
+
+Add the ``TagsMixin`` class to the ``DeviceModel``.
+
+```python
+class DeviceModel(Device, TagMixin):
+```
+
+Next, update the ``create`` method on the ``DeviceModel`` to add the tags if they exist.
+
+```python
+if self.tags:
+    self.add_tags(db, self.tags)
+
+# shown for placement purposes
+return self.get(db)
+```
+
+Now navigate to **workshop_b2/models.py** and add the following line to the **Device** class.
+
+```python
+class Device(BaseModel):
+    name: str
+    manufacturer: str | None = None
+    status: DeviceStatus = DeviceStatus.ACTIVE
+    tags: list[Tag] = Field(default_factory=list)
+```
+
+Run the load command with the ``--tags`` option.
+
+```shell
+invoke lab2-load --tags
+```
+
+Navigate back to the local [Neo4j UI](http://localhost:7474).
+
+Click on any of the tags and then click on the **relationship** icon.
+
+![neo4j-tag-relationship-1](../images/lab2/12-neo4j-tag-relationship-1.png)
+
+Click on the **relationship** icon for one of the devices tied to the selected tag.
+
+![neo4j-tag-device-1](../images/lab2/13-neo4j-tag-device-1.png)
+
+Now we can see that devices can have multiple tags and tags can have multiple devices.
