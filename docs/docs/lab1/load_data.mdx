@@ -13,9 +13,12 @@ Before taking a closer look at the different schemas, we're gonna load some data
 :::info
 The application must be running on port 8000 while running the next command so it's important to keep the application running on one terminal and to start a new one to execute the command below
 :::
-
+:::info
+You may need to reissue the poetry shell command to reenter the virtual environment for this lab.
+:::
 ```shell
-invoke lab1-start --reload
+poetry shell
+invoke lab1-load
 ```
 
 ## Query the data via the REST API
