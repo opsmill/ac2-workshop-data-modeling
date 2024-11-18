@@ -1,10 +1,10 @@
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
+import { themes as prismThemes } from 'prism-react-renderer';
+import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
-  title: 'Autocon2 Data Modeling Workshop',
-  tagline: 'Workshop about data modeling and schema languages',
+  title: 'AC2 WS:B2 - Data Modeling & Network Source of Truth',
+  tagline: 'Workshop about data modeling, schema languages, and Source of Truth',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
@@ -63,7 +63,7 @@ const config: Config = {
           type: "docSidebar",
           sidebarId: "docsSidebar",
           position: "left",
-          label: "Autocon2 - Data Modeling Workshop",
+          label: "AC2 WS:B2 - Data Modeling & Network Source of Truth",
         },
         // {
         //   type: "search",
@@ -78,7 +78,7 @@ const config: Config = {
       ],
     },
     footer: {
-      copyright: `Copyright © ${new Date().getFullYear()} - <b>Infrahub</b> by OpsMill.`,
+      copyright: `Copyright © ${new Date().getFullYear()} - OpsMill.`,
     },
     prism: {
       theme: prismThemes.oneDark,
