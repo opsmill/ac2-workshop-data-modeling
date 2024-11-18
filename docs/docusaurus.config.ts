@@ -3,7 +3,7 @@ import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
-  title: 'Autocon 2 WS:B2 - Data Modeling & Network Source of Truth',
+  title: 'Autocon2 WS:B2 - Data Modeling & Network Source of Truth',
   tagline: 'Workshop about data modeling, schema languages, and Source of Truth',
   favicon: 'img/favicon.ico',
 
@@ -63,7 +63,7 @@ const config: Config = {
           type: "docSidebar",
           sidebarId: "docsSidebar",
           position: "left",
-          label: "Autocon 2 WS:B2 - Data Modeling & Network Source of Truth",
+          label: "Autocon2 WS:B2",
         },
         // {
         //   type: "search",
